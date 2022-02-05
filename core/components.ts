@@ -207,6 +207,8 @@ export const PlayerRemoteMove: KeyedSystem<{ transform: RefCell<mat4>, player: R
     player.value.targetPosition = [body.position[0], body.position[1], 0]
     player.value.targetPositionRefreshed = new Date()
     player.value.validUntil = new Date(new Date().getTime() + 2000)
+    player.value.emotion = body.emotion
+    player.value.emotionUntil = new Date(new Date().getTime() + 500)
   })
 
   const remoteUserNames = world.queue.updateLocation.map(body => body.userId)
@@ -263,7 +265,7 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
         draw.popMatrix()
       })
 
-      if (world.keyState.keys.emotion) {
+      if (world.keyState.keys.emotion && player.value.control) {
         const kl = world.keyState.keys.left
         const kr = world.keyState.keys.right
         const ku = world.keyState.keys.up

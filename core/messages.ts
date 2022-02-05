@@ -9,5 +9,6 @@ export interface UpdateLocation extends DefaultWebSocketMessage {
   area: string
   chunk: [number, number]
   position: [number, number]
+  emotion: string
   updateChunk: boolean
 }
