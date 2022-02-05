@@ -1,16 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind screens;
+@tailwind utilities;
+
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    @apply overflow-hidden;
+
+    padding: 0;
+    margin: 0;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+    word-break: keep-all;
+}
+
+@font-face {
+    font-family: yuji;
+    src: url("/HSYuji.ttf");
+}
+
+.font-main {
+    font-family: yuji, cursive;
+}
+
+.scroll-down-arrow{
+    transform: translate(-50%,-50%);
+}
+
+.scroll-down-arrow span{
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    border-bottom: 2px solid white;
+    border-right: 2px solid white;
+    transform: rotate(45deg);
+    margin: -10px;
+    animation: scroll-down-arrow-animate 2s infinite;
+}
+
+.scroll-down-arrow span:nth-child(2){
+    animation-delay: -0.2s;
+}
+
+.scroll-down-arrow span:nth-child(3){
+    animation-delay: -0.4s;
+}
+
+@keyframes scroll-down-arrow-animate {
+    0%{
+        opacity: 0;
+        transform: rotate(45deg) translate(-20px,-20px);
+    }
+    50%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        transform: rotate(45deg) translate(20px,20px);
+    }
 }
