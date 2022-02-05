@@ -1,5 +1,5 @@
-import {Disposable, ShaderProgram} from "./world";
-import {parseObjFile, parseObjFileWithOutline} from "./objFile";
+import {Disposable} from "./world";
+import {parseObjFile} from "./objFile";
 import {vec3, vec4} from "./declarativeLinalg";
 import {vec2} from "gl-matrix";
 
