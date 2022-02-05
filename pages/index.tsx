@@ -36,11 +36,10 @@ const Index: NextPage = () => {
   }
 
   React.useEffect(() => {
-    const authToken = window.localStorage.getItem("authToken")
-    if (authToken !== null) {
-      router.push("/").then()
+    if (globalCtx.user !== null) {
+      router.push("/poniverse").then()
     }
-  }, [])
+  }, [globalCtx.user])
 
   return (
     <div className={"relative w-screen h-screen flex flex-col justify-center items-center bg-gradient-to-b from-blue-400 to-cyan-200"}>
