@@ -236,7 +236,7 @@ export class World<K extends string, S extends { [P in K]: S[P] }> implements Di
           Math.floor(position[1] / playerChunkSize),
         ],
         position: position,
-        emotion: player.emotion,
+        emotion: player.emotionUntil.getTime() > new Date().getTime() ? player.emotion : "",
         updateChunk: updateChunk,
       }
 

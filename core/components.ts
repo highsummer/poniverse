@@ -208,7 +208,7 @@ export const PlayerRemoteMove: KeyedSystem<{ transform: RefCell<mat4>, player: R
     player.value.targetPositionRefreshed = new Date()
     player.value.validUntil = new Date(new Date().getTime() + 2000)
     player.value.emotion = body.emotion
-    player.value.emotionUntil = new Date(new Date().getTime() + 500)
+    player.value.emotionUntil = body.emotion !== "" ? new Date(new Date().getTime() + 500) : new Date(0)
   })
 
   const remoteUserNames = world.queue.updateLocation.map(body => body.userId)
