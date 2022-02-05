@@ -174,11 +174,12 @@ const Poniverse: NextPage = () => {
           "❤️", "🎉", "✅", "😭",
           "🔥", "👀", "⬅️", "➡️",
         ].map((e, i) => [i, e] as [number, string])) {
-          const x = ((i - 3.5) / 7) * 1.2
+          const x = ((i >= 4 ? i - 4 : i) - 1.5) / 3 * 0.6
+          const y = i >= 4 ? -0.9 : -0.725
 
           ecs.create(
             "button", ref({
-              mask: { x1: x - 0.08, x2: x + 0.08, y1: -1.0, y2: -0.85 },
+              mask: { x1: x - 0.08, x2: x + 0.08, y1: y - 0.075, y2: y + 0.075 },
               hover: false,
               active: false,
               click: false,
