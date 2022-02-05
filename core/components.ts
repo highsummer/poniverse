@@ -140,7 +140,6 @@ export const PlayerRemoteMove: KeyedSystem<{ transform: RefCell<mat4>, player: R
     }
 
     if (players.every(([key, player]) => player.value.name !== body.userId)) {
-      console.debug(body.userId, "created")
       world.ecs.create(
         "transform", ref(mat4.fromTranslation(vec3.fromValues(body.position[0], body.position[1], 0))),
         "player", ref({
@@ -175,7 +174,6 @@ export const PlayerRemoteMove: KeyedSystem<{ transform: RefCell<mat4>, player: R
     player.value.targetPosition = [body.position[0], body.position[1], 0]
     player.value.targetPositionRefreshed = new Date()
     player.value.validUntil = new Date(new Date().getTime() + 2000)
-    console.debug(body.userId, "->", body.position)
   })
 
   const remoteUserNames = world.queue.updateLocation.map(body => body.userId)
@@ -186,7 +184,6 @@ export const PlayerRemoteMove: KeyedSystem<{ transform: RefCell<mat4>, player: R
     }
 
     if (remoteUserNames.every(remoteUsername => remoteUsername !== player.value.name) && player.value.validUntil.getTime() < new Date().getTime()) {
-      console.debug(player.value.username, "removed")
       world.ecs.remove(key)
     }
   }
@@ -222,6 +219,7 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
         draw.addMatrix(transform.value)
         draw.addMatrix(mat4.fromTranslation(vec3.fromValues(0, 0, animationFrame === 0 ? 1 : 1.1)))
         draw.addMatrix(mat4.fromXRotation(Math.PI / 2))
+        draw.setHiderPivot([0.0, 0.0, 0.75])
         draw.setAmbient(1)
         draw.setTexture(
           animationFrame === 0 ?

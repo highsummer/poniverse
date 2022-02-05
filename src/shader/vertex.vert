@@ -14,8 +14,10 @@ in vec2 a_textureCoordinate;
 out vec3 fragLightingNormal;
 out vec3 fragPhysicalNormal;
 out vec3 fragPosition;
+out vec3 fragViewPosition;
 out vec4 fragColor;
 out vec2 fragTextureCoordinate;
+out float fragDepth;
 
 const float zNear = 0.1;
 const float zFar = 100.0;

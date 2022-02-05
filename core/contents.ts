@@ -236,7 +236,7 @@ export class Contents implements Disposable {
     "ponix[senior]" | "ponixJump[senior]" | "ponix[team_leader]" | "ponixJump[team_leader]" |
     "ponix[mentor]" | "ponixJump[mentor]" | "ponix[frontperson]" | "ponixJump[frontperson]" |
     "noise" | "ponix" | "ponixJump" | "grass" | "grassPattern" | "marble" | "sky" | "bark" | "bush1" |
-    "studentCommunityHall",
+    "studentCommunityHall" | "alphaMask",
     Texture>
 
   constructor(gl: WebGL2RenderingContext, shader: WebGLProgram) {
@@ -358,6 +358,7 @@ export class Contents implements Disposable {
       bark: new AsyncTexture(gl, "/bark.png", true),
       bush1: new AsyncTexture(gl, "/bush_1.png", true),
       studentCommunityHall: new AsyncTexture(gl, "/student_community_hall.png", true),
+      alphaMask: new AsyncTexture(gl, "/alpha_mask.png", true),
       ...Object.fromEntries(
         [
           "analyst", "athletic", "engineer", "entrepreneur", "general_affairs", "prepco",
@@ -379,7 +380,7 @@ export class Contents implements Disposable {
         "ponix[senior]" | "ponixJump[senior]" | "ponix[team_leader]" | "ponixJump[team_leader]" |
         "ponix[mentor]" | "ponixJump[mentor]" | "ponix[frontperson]" | "ponixJump[frontperson]",
         Texture
-      >
+      >,
     }
   }
 

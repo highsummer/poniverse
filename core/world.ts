@@ -1,7 +1,7 @@
 import React from "react"
 import {mat4, vec3, vec4} from "./declarativeLinalg";
 import {intersect} from "./utils";
-import {Mesh, Texture} from "./contents";
+import {ContentsManager, Mesh, Texture} from "./contents";
 import {CSSProperties} from "react";
 import {UpdateLocation} from "./messages";
 import {Player} from "./components";
@@ -504,6 +504,14 @@ export class DrawContext implements Disposable {
     )
   }
 
+  setHiderPivot(position: vec3) {
+    const transformedPosition = vec3.transformMat4(position, mat4.mul(this.viewMatrix, this.matrix.slice(-1)[0]))
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.defaultShader.program, "hiderPivotDepth"),
+      transformedPosition[2],
+    )
+  }
+
   init() {
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer.framebuffer)
 
@@ -520,6 +528,28 @@ export class DrawContext implements Disposable {
 
     this.gl.enable(this.gl.CULL_FACE)
     this.gl.cullFace(this.gl.BACK)
+
+    this.gl.activeTexture(this.gl.TEXTURE1)
+    this.gl.bindTexture(this.gl.TEXTURE_2D, ContentsManager.texture.alphaMask.getTexture())
+    this.gl.uniform1i(
+      this.gl.getUniformLocation(this.defaultShader.program, "alphaMask"),
+      1,
+    )
+
+    this.gl.uniform2f(
+      this.gl.getUniformLocation(this.defaultShader.program, "screenSize"),
+      this.width, this.height,
+    )
+
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.defaultShader.program, "alphaMaskSize"),
+      32,
+    )
+
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.defaultShader.program, "aspect"),
+      this.width / this.height,
+    )
   }
 
   getWrapPosition(worldPosition: vec3): vec3 {
