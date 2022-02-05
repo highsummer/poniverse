@@ -30,7 +30,6 @@ void main() {
     vec3 hiderPosition = hiderSpace * normalizedPosition;
 
     float intensity = (1.0 - ambient) * max(fragLightingNormal.z, 0.0) + ambient;
-    float alphaThreshold = texture(alphaMask, gl_FragCoord.xy / alphaMaskSize).x;
 
     float positionRadius = (
         hiderPosition.x * hiderPosition.x * 0.8 +
@@ -42,6 +41,13 @@ void main() {
     float hiderDepthEnd = (-hiderPosition.z - offset) * 1.25 * step(hiderPosition.z, -offset);
 
     float alphaMultipler = smoothstep(hiderDepthBegin, hiderDepthEnd, positionRadius);
+    float useAlphaMultiplier = 1.0 - smoothstep(hiderDepthEnd, hiderDepthEnd * 1.2, positionRadius);
+
+    float alphaThreshold = mix(
+        0.5,
+        texture(alphaMask, gl_FragCoord.xy / alphaMaskSize).x,
+        useAlphaMultiplier
+    );
 
     if (color.a * alphaMultipler < alphaThreshold) {
         discard;
