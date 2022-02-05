@@ -36,9 +36,12 @@ void main() {
         hiderPosition.x * hiderPosition.x * 0.8 +
         hiderPosition.y * hiderPosition.y * 1.2
     ) * 10.0;
-    float hiderDepth = -hiderPosition.z * step(hiderPosition.z, -0.2);
 
-    float alphaMultipler = smoothstep(hiderDepth * 0.5, hiderDepth, positionRadius);
+    float offset = 0.2;
+    float hiderDepthBegin = (-hiderPosition.z - offset) * 0.5 * step(hiderPosition.z, -offset);
+    float hiderDepthEnd = (-hiderPosition.z - offset) * 1.25 * step(hiderPosition.z, -offset);
+
+    float alphaMultipler = smoothstep(hiderDepthBegin, hiderDepthEnd, positionRadius);
 
     if (color.a * alphaMultipler < alphaThreshold) {
         discard;
