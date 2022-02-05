@@ -269,7 +269,9 @@ const Poniverse: NextPage = () => {
             moveAnimation: 0,
             type: globalCtx.user.type,
             username: globalCtx.authUser,
-            name: `${globalCtx.user.classId}분반 ${globalCtx.user.fullName}`,
+            name: globalCtx.user.classId === "새준위" ?
+              `새준위 ${globalCtx.user.fullName}` :
+              `${globalCtx.user.classId}분반 ${globalCtx.user.fullName}`,
             lastLocationUpdated: new Date(),
             control: true,
             validUntil: new Date(),
