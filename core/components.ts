@@ -16,6 +16,8 @@ export interface Player {
   sourcePosition: vec3
   targetPosition: vec3
   targetPositionRefreshed: Date
+  emotion: string
+  emotionUntil: Date
 }
 
 const MoveAnimationFrameScale = 100
@@ -51,7 +53,9 @@ export const PlayerMove: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
       const mdy = world.keyState.mouse.down ? world.keyState.mouse.y - world.drawContext.height / 2 / window.devicePixelRatio : 0
       const md = vec2.normalize(vec2.fromValues(mdx, -mdy))
 
-      const direction = vec2.normalize(vec2.add(kd, md))
+      const d = world.keyState.keys.emotion ? vec2.fromValues(0, 0) : vec2.add(kd, md)
+
+      const direction = vec2.normalize(d)
       const position = mat4.getTranslation(transform.value)
       const mask: Rect = Rect.translate(
         {
@@ -97,6 +101,33 @@ export const PlayerMove: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
         }
       } else {
         player.value.moveAnimation = 0
+      }
+
+      if (world.keyState.keysReleased.emotion) {
+        const kl = world.keyState.keys.left
+        const kr = world.keyState.keys.right
+        const ku = world.keyState.keys.up
+        const kd = world.keyState.keys.down
+
+        for (const [emotion, highlight] of ([
+          ["←", false],
+          ["→", false],
+          ["↑", false],
+          ["↓", false],
+          ["❤️", kl && !kr && !ku && !kd],
+          ["🎉", !kl && kr && !ku && !kd],
+          ["✅", !kl && !kr && ku && !kd],
+          ["😭", !kl && !kr && !ku && kd],
+          ["🔥", kl && !kr && ku && !kd],
+          ["👀", !kl && kr && ku && !kd],
+          ["⬅️", kl && !kr && !ku && kd],
+          ["➡️", !kl && kr && !ku && kd],
+        ] as [string, boolean][])) {
+          if (highlight) {
+            player.value.emotion = emotion
+            player.value.emotionUntil = new Date(new Date().getTime() + 3000)
+          }
+        }
       }
     })
 }
@@ -154,6 +185,8 @@ export const PlayerRemoteMove: KeyedSystem<{ transform: RefCell<mat4>, player: R
           sourcePosition: vec3.fromValues(body.position[0], body.position[1], 0),
           targetPosition: vec3.fromValues(body.position[0], body.position[1], 0),
           targetPositionRefreshed: new Date(),
+          emotion: "",
+          emotionUntil: new Date(),
         })
       )
     }
@@ -230,6 +263,41 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
         draw.popMatrix()
       })
 
+      if (world.keyState.keys.emotion) {
+        const kl = world.keyState.keys.left
+        const kr = world.keyState.keys.right
+        const ku = world.keyState.keys.up
+        const kd = world.keyState.keys.down
+
+        for (const [text, position, fontSize, highlight] of ([
+          ["←", [-3.0, 0.0], 1, false],
+          ["→", [3.0, 0.0], 1, false],
+          ["↑", [0.0, 3.0], 1, false],
+          ["↓", [0.0, -3.0], 1, false],
+          ["❤️", [-2.0, 0.0], 1.5, kl && !kr && !ku && !kd],
+          ["🎉", [2.0, 0.0], 1.5, !kl && kr && !ku && !kd],
+          ["✅", [0.0, 2.0], 1.5, !kl && !kr && ku && !kd],
+          ["😭", [0.0, -2.0], 1.5, !kl && !kr && !ku && kd],
+          ["🔥", [-2.0, 2.0], 1.5, kl && !kr && ku && !kd],
+          ["👀", [2.0, 2.0], 1.5, !kl && kr && ku && !kd],
+          ["⬅️", [-2.0, -2.0], 1.5, kl && !kr && !ku && kd],
+          ["➡️", [2.0, -2.0], 1.5, !kl && kr && !ku && kd],
+        ] as [string, vec2, number, boolean][])) {
+          draw.drawText(
+            `playerEmotionOption#${text.split("").reduce((acc, x) => acc + x.charCodeAt(0), 0)}#${player.value.name}`,
+            text,
+            vec3.add(mat4.getTranslation(transform.value), vec3.fromValues(position[0], -1.0, 1.5 + position[1])),
+            {
+              backgroundColor: highlight ? "#888a" : "#000a",
+              border: highlight ? "1px solid white" : "",
+              padding: "0 3px",
+              borderRadius: "3px",
+              fontSize: `${fontSize}rem`,
+            },
+          )
+        }
+      }
+
       draw.drawText(
         `playerName#${player.value.name}`,
         player.value.name,
@@ -241,6 +309,22 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
           fontSize: "0.8rem",
         },
       )
+
+      if (player.value.emotionUntil.getTime() > new Date().getTime()) {
+        draw.drawText(
+          `playerEmotion#${player.value.name}`,
+          player.value.emotion,
+          vec3.add(mat4.getTranslation(transform.value), vec3.fromValues(0, 0, 2.5)),
+          {
+            animation: "bounce 0.5s infinite",
+            backgroundColor: "#fff",
+            padding: "0 6px",
+            borderRadius: "6px",
+            border: "1px solid #cba",
+            fontSize: "1.5rem",
+          },
+        )
+      }
 
       draw.pushMatrix()
       draw.addMatrix(transform.value)

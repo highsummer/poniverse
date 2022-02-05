@@ -278,6 +278,7 @@ export class World<K extends string, S extends { [P in K]: S[P] }> implements Di
   }
 
   update(time: Time) {
+    this.keyState.update(time)
     this.drawContext.collectTexts()
     this.ecs.update("update", this, time)
   }
@@ -571,24 +572,30 @@ export class DrawContext implements Disposable {
   }
 
   drawText(key: string, text: string, position: vec3, style?: CSSProperties) {
-    const node = key in this.textNodes ? this.textNodes[key].node : document.createElement("span")
     if (!(key in this.textNodes)) {
-      document.querySelector("#labelPane")?.appendChild(node)
-      this.textNodes[key] = { node: node, stale: false }
-      node.style.pointerEvents = "none"
+      const container = document.createElement("div")
+      const inner = document.createElement("div")
+      container.style.pointerEvents = "none"
+      inner.style.pointerEvents = "none"
+      container.appendChild(inner)
+      document.querySelector("#labelPane")?.appendChild(container)
+      this.textNodes[key] = { node: container, stale: false }
     }
+
+    const container = this.textNodes[key].node
+    const inner = container.querySelector("div")!
 
     this.textNodes[key].stale = false
     this.textNodes[key].node.style.display = "block"
 
     const viewPosition = vec3.transformMat4(this.getWrapPosition(position), this.viewMatrix)
-    node.style.transform = `translate(${(viewPosition[0] / viewPosition[2]) * 50 + 50}vw, ${(-viewPosition[1] / viewPosition[2]) * 50 + 50}vh) translate(-50%, -50%)`
-    node.style.zIndex = `${Math.floor(-viewPosition[2] * 1000 + 20000)}`
-    node.innerHTML = text
-    node.className = "absolute left-0 top-0 text-white "
+    container.style.transform = `translate(${(viewPosition[0] / viewPosition[2]) * 50 + 50}vw, ${(-viewPosition[1] / viewPosition[2]) * 50 + 50}vh) translate(-50%, -50%)`
+    container.style.zIndex = `${Math.floor(-viewPosition[2] * 1000 + 20000)}`
+    container.className = "absolute left-0 top-0 text-white "
+    inner.innerHTML = text
 
     Object.entries(style ?? {}).forEach(([key, value]) => {
-      node.style.setProperty(key.replaceAll(/([a-z])([A-Z])/g, "$1-$2"), value)
+      inner.style.setProperty(key.replaceAll(/([a-z])([A-Z])/g, "$1-$2"), value)
     })
   }
 
@@ -680,7 +687,7 @@ export class DrawContext implements Disposable {
   }
 }
 
-type Keys = "left" | "right" | "up" | "down" | "use"
+type Keys = "left" | "right" | "up" | "down" | "use" | "emotion"
 
 export class KeyState implements Disposable {
   document: Document
@@ -693,12 +700,16 @@ export class KeyState implements Disposable {
   touchEndListener: (e: TouchEvent) => any
   touchMoveListener: (e: TouchEvent) => any
 
+  keysRaw: Record<Keys, boolean>
   keys: Record<Keys, boolean>
   keysPressed: Record<Keys, boolean>
+  keysReleased: Record<Keys, boolean>
   mouse: {
+    downRaw: boolean,
     down: boolean,
     x: number,
     y: number,
+    tapRaw: boolean,
     tap: boolean,
     pressedAt: Date,
   }
@@ -711,6 +722,7 @@ export class KeyState implements Disposable {
     up: "ArrowUp",
     down: "ArrowDown",
     use: " ",
+    emotion: "Shift",
   }
 
   constructor(document: Document) {
@@ -742,19 +754,42 @@ export class KeyState implements Disposable {
     this.touchStartListener = touchStartListener
     this.touchEndListener = touchEndListener
     this.touchMoveListener = touchMoveListener
-    this.keys = Object.fromEntries(Object.keys(KeyState.KeyMaps)
+
+    const defaultFalseKeys = Object.fromEntries(Object.keys(KeyState.KeyMaps)
       .map(key => [key, false] as [Keys, boolean])) as Record<Keys, boolean>
-    this.keysPressed = Object.fromEntries(Object.keys(KeyState.KeyMaps)
-      .map(key => [key, false] as [Keys, boolean])) as Record<Keys, boolean>
+
+    this.keysRaw = { ...defaultFalseKeys }
+    this.keys = { ...defaultFalseKeys }
+    this.keysPressed = { ...defaultFalseKeys }
+    this.keysReleased = { ...defaultFalseKeys }
     this.mouse = {
+      downRaw: false,
       down: false,
       x: 0,
       y: 0,
+      tapRaw: false,
       tap: false,
       pressedAt: new Date(),
     }
 
     this.disabled = false
+  }
+
+  update(time: Time) {
+    Object.entries(KeyState.KeyMaps)
+      .forEach(([key, value]) => {
+        if (this.keysRaw[key as Keys]) {
+          this.keysPressed[key as Keys] = !this.keys[key as Keys]
+          this.keys[key as Keys] = true
+        } else {
+          this.keysReleased[key as Keys] = this.keys[key as Keys]
+          this.keys[key as Keys] = false
+        }
+      })
+
+    this.mouse.down = this.mouse.downRaw
+    this.mouse.tap = this.mouse.tapRaw
+    this.mouse.tapRaw = false
   }
 
   onDelete() {
@@ -772,8 +807,7 @@ export class KeyState implements Disposable {
     Object.entries(KeyState.KeyMaps)
       .forEach(([key, value]) => {
         if (e.key === value && !this.disabled) {
-          this.keysPressed[key as Keys] = !this.keys[key as Keys]
-          this.keys[key as Keys] = true
+          this.keysRaw[key as Keys] = true
         }
       })
   }
@@ -782,22 +816,21 @@ export class KeyState implements Disposable {
     Object.entries(KeyState.KeyMaps)
       .forEach(([key, value]) => {
         if (e.key === value) {
-          this.keysPressed[key as Keys] = false
-          this.keys[key as Keys] = false
+          this.keysRaw[key as Keys] = false
         }
       })
   }
 
   onMouseDown(e: MouseEvent) {
     if (!this.disabled) {
-      this.mouse.down = true
+      this.mouse.downRaw = true
       this.mouse.x = e.x
       this.mouse.y = e.y
     }
   }
 
   onMouseUp(e: MouseEvent) {
-    this.mouse.down = false
+    this.mouse.downRaw = false
   }
 
   onMouseMove(e: MouseEvent) {
@@ -810,7 +843,7 @@ export class KeyState implements Disposable {
   onTouchStart(e: TouchEvent) {
     e.preventDefault()
     if (!this.disabled) {
-      this.mouse.down = true
+      this.mouse.downRaw = true
       this.mouse.x = e.touches[0].pageX
       this.mouse.y = e.touches[0].pageY
       this.mouse.pressedAt = new Date()
@@ -819,10 +852,9 @@ export class KeyState implements Disposable {
 
   onTouchEnd(e: TouchEvent) {
     e.preventDefault()
-    this.mouse.down = false
+    this.mouse.downRaw = false
     if (new Date().getTime() - this.mouse.pressedAt.getTime() < 100) {
-      this.mouse.tap = true
-      setTimeout(() => { this.mouse.tap = false }, 100)
+      this.mouse.tapRaw = true
     }
   }
 

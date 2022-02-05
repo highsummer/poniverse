@@ -278,6 +278,8 @@ const Poniverse: NextPage = () => {
             sourcePosition: vec3.fromValues(0, 0, 0),
             targetPosition: vec3.fromValues(0, 0, 0),
             targetPositionRefreshed: new Date(),
+            emotion: "",
+            emotionUntil: new Date(),
           })
         )
       } else {
