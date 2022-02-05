@@ -20,8 +20,11 @@ export class KeyState implements Disposable {
   mouse: {
     downRaw: boolean,
     down: boolean,
+    pressed: boolean,
     x: number,
     y: number,
+    graphicX: number,
+    graphicY: number,
     tapRaw: boolean,
     tap: boolean,
     pressedAt: Date,
@@ -80,8 +83,11 @@ export class KeyState implements Disposable {
     this.mouse = {
       downRaw: false,
       down: false,
+      pressed: false,
       x: 0,
       y: 0,
+      graphicX: 0,
+      graphicY: 0,
       tapRaw: false,
       tap: false,
       pressedAt: new Date(),
@@ -103,6 +109,7 @@ export class KeyState implements Disposable {
         }
       })
 
+    this.mouse.pressed = this.mouse.downRaw && !this.mouse.down
     this.mouse.down = this.mouse.downRaw
     this.mouse.tap = this.mouse.tapRaw
     this.mouse.tapRaw = false
@@ -143,6 +150,8 @@ export class KeyState implements Disposable {
       this.mouse.downRaw = true
       this.mouse.x = e.x
       this.mouse.y = e.y
+      this.mouse.graphicX = (e.x / window.innerWidth * 2 - 1) * window.innerWidth / window.innerHeight
+      this.mouse.graphicY = -(e.y / window.innerHeight * 2 - 1)
     }
     this.mode = "mouse"
   }
@@ -155,6 +164,8 @@ export class KeyState implements Disposable {
     if (!this.disabled) {
       this.mouse.x = e.x
       this.mouse.y = e.y
+      this.mouse.graphicX = (e.x / window.innerWidth * 2 - 1) * window.innerWidth / window.innerHeight
+      this.mouse.graphicY = -(e.y / window.innerHeight * 2 - 1)
     }
   }
 
@@ -165,6 +176,8 @@ export class KeyState implements Disposable {
       this.mouse.downRaw = true
       this.mouse.x = e.touches[0].pageX
       this.mouse.y = e.touches[0].pageY
+      this.mouse.graphicX = (e.touches[0].pageX / window.innerWidth * 2 - 1) * window.innerWidth / window.innerHeight
+      this.mouse.graphicY = -(e.touches[0].pageY / window.innerHeight * 2 - 1)
       this.mouse.pressedAt = new Date()
     }
   }
@@ -182,6 +195,8 @@ export class KeyState implements Disposable {
     if (!this.disabled) {
       this.mouse.x = e.touches[0].pageX
       this.mouse.y = e.touches[0].pageY
+      this.mouse.graphicX = (e.touches[0].pageX / window.innerWidth * 2 - 1) * window.innerWidth / window.innerHeight
+      this.mouse.graphicY = -(e.touches[0].pageY / window.innerHeight * 2 - 1)
     }
   }
 

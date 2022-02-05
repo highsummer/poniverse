@@ -1,7 +1,8 @@
 import {mat4, vec2, vec3, vec4} from "../declarativeLinalg";
-import {KeyedSystem, ref, RefCell} from "../world";
+import {ref, RefCell} from "../world";
 import {ContentsManager} from "../contents";
 import {Rect, Wall} from "./index";
+import {KeyedSystem} from "../world/ecs";
 
 export interface Player {
   type: string
@@ -22,6 +23,7 @@ export interface Player {
 const MoveAnimationFrameScale = 100
 export const PlayerMaskSize = 0.3
 const PlayerRemoteUpdateInterval = 200
+export const EmotionSpan = 3000
 
 export function aabbCollision(r1: Rect, r2: Rect): boolean {
   return r1.x1 < r2.x2 && r1.x2 > r2.x1 && r1.y1 < r2.y2 && r1.y2 > r2.y1
@@ -111,7 +113,7 @@ export const PlayerMove: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
         ] as [string, boolean][])) {
           if (highlight) {
             player.value.emotion = emotion
-            player.value.emotionUntil = new Date(new Date().getTime() + 3000)
+            player.value.emotionUntil = new Date(new Date().getTime() + EmotionSpan)
           }
         }
       }

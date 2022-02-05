@@ -1,7 +1,8 @@
-import {KeyedSystem, RefCell} from "../world";
+import {RefCell} from "../world";
 import {mat4, vec3} from "../declarativeLinalg";
 import {Rect} from "./index";
 import {aabbCollision, Player, PlayerMaskSize} from "./player";
+import {KeyedSystem} from "../world/ecs";
 
 export interface Usable {
   range: Rect

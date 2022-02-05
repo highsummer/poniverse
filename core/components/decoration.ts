@@ -1,7 +1,8 @@
-import {KeyedSystem, RefCell} from "../world";
+import {RefCell} from "../world";
 import {mat4, vec3} from "../declarativeLinalg";
 import seedrandom from "seedrandom";
 import {ContentsManager} from "../contents";
+import {KeyedSystem} from "../world/ecs";
 
 export interface Tree {
   seed: number

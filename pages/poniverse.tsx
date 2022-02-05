@@ -16,12 +16,19 @@ import {World} from "../core/world/world";
 import {emptyEcs, SparseStorage} from "../core/world/ecs";
 import {ref, RefCell} from "../core/world";
 import {KeyState} from "../core/world/input";
+import {
+  Button,
+  ButtonInteract,
+  EmotionButton,
+  EmotionButtonDraw,
+  EmotionButtonInteract
+} from "../core/components/button";
 
 interface OuterState {
   width: number
   height: number
   userId: string | null
-  world: _world<string, any> | null
+  world: World<string, any> | null
   ws: WebSocket | null
 }
 
@@ -111,6 +118,8 @@ const Poniverse: NextPage = () => {
           .attach("usable", new SparseStorage<RefCell<Usable>>())
           .attach("simpleModal", new SparseStorage<RefCell<SimpleModal>>())
           .attach("tree", new SparseStorage<RefCell<Tree>>())
+          .attach("button", new SparseStorage<RefCell<Button>>())
+          .attach("emotionButton", new SparseStorage<RefCell<EmotionButton>>())
           .register("update", PlayerMove)
           .register("update", PlayerTargetMove)
           .register("update", PlayerRemoteMove)
@@ -121,6 +130,9 @@ const Poniverse: NextPage = () => {
           .register("draw", UsableDraw)
           .register("update", LaunchSimpleModal)
           .register("draw", TreeDraw)
+          .register("update", ButtonInteract)
+          .register("update", EmotionButtonInteract)
+          .register("draw", EmotionButtonDraw)
 
         ecs.create(
           "transform", ref(mat4.create()),
@@ -157,6 +169,26 @@ const Poniverse: NextPage = () => {
           }),
           "wall", ref({ mask: { x1: -1.75, y1: -1.75, x2: 1.75, y2: 1.75 } })
         )
+
+        for (const [i, text] of [
+          "❤️", "🎉", "✅", "😭",
+          "🔥", "👀", "⬅️", "➡️",
+        ].map((e, i) => [i, e] as [number, string])) {
+          const x = ((i - 3.5) / 7) * 1.2
+
+          ecs.create(
+            "button", ref({
+              mask: { x1: x - 0.08, x2: x + 0.08, y1: -1.0, y2: -0.85 },
+              hover: false,
+              active: false,
+              click: false,
+              disabled: false,
+            }),
+            "emotionButton", ref({
+              text: text,
+            })
+          )
+        }
 
         const random = seedrandom("")
 

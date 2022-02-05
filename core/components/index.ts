@@ -1,6 +1,7 @@
-import {KeyedSystem, RefCell} from "../world";
+import {RefCell} from "../world";
 import {mat4} from "../declarativeLinalg";
 import {ContentsManager} from "../contents";
+import {KeyedSystem} from "../world/ecs";
 
 export interface Rect {
   x1: number,

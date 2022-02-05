@@ -1,8 +1,9 @@
 import {Mesh, Texture} from "../contents";
-import {KeyedSystem, RefCell} from "../world";
+import {RefCell} from "../world";
 import {mat4} from "../declarativeLinalg";
 import React from "react";
 import {Usable} from "./usable";
+import {KeyedSystem} from "../world/ecs";
 
 export interface SimpleModel {
   texture: () => Texture
