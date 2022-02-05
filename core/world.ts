@@ -572,7 +572,7 @@ export class DrawContext implements Disposable {
     )
   }
 
-  drawText(key: string, text: string, position: vec3, style?: CSSProperties) {
+  drawText(key: string, text: string, position: vec3, style?: CSSProperties, mode: "immersive" | "orthographic" = "immersive") {
     if (!(key in this.textNodes)) {
       const container = document.createElement("div")
       const inner = document.createElement("div")
@@ -589,9 +589,15 @@ export class DrawContext implements Disposable {
     this.textNodes[key].stale = false
     this.textNodes[key].node.style.display = "block"
 
-    const viewPosition = vec3.transformMat4(this.getWrapPosition(position), this.viewMatrix)
-    container.style.transform = `translate(${(viewPosition[0] / viewPosition[2]) * 50 + 50}vw, ${(-viewPosition[1] / viewPosition[2]) * 50 + 50}vh) translate(-50%, -50%)`
-    container.style.zIndex = `${Math.floor(-viewPosition[2] * 1000 + 20000)}`
+    if (mode === "immersive") {
+      const viewPosition = vec3.transformMat4(this.getWrapPosition(position), this.viewMatrix)
+      container.style.transform = `translate(${(viewPosition[0] / viewPosition[2]) * 50 + 50}vw, ${(-viewPosition[1] / viewPosition[2]) * 50 + 50}vh) translate(-50%, -50%)`
+      container.style.zIndex = `${Math.floor(-viewPosition[2] * 1000 + 20000)}`
+    } else if (mode === "orthographic") {
+      const aspect = window.innerWidth / window.innerHeight
+      container.style.transform = `translate(${position[0] / aspect * 50 + 50}vw, ${-position[1] * 50 + 50}vh) translate(-50%, -50%)`
+      container.style.zIndex = `${Math.floor(-position[2] * 1000 + 20000)}`
+    }
     container.className = "absolute left-0 top-0 text-white "
     inner.innerHTML = text
 

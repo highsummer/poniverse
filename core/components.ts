@@ -288,14 +288,15 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
           draw.drawText(
             `playerEmotionOption#${text.split("").reduce((acc, x) => acc + x.charCodeAt(0), 0)}#${player.value.name}`,
             text,
-            vec3.add(mat4.getTranslation(transform.value), vec3.fromValues(position[0], -1.0, 1.5 + position[1])),
+            [position[0] / 10.0, position[1] / 10.0, 0.0],
             {
               backgroundColor: highlight ? "#888a" : "#000a",
               border: highlight ? "1px solid white" : "",
-              padding: "0 3px",
+              padding: "0 6px",
               borderRadius: "3px",
               fontSize: `${fontSize}rem`,
             },
+            "orthographic"
           )
         }
       }
