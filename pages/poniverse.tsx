@@ -1,28 +1,27 @@
 import React from "react"
 import type { NextPage } from "next"
-import {emptyEcs, KeyState, ref, RefCell, SparseStorage, World} from "../core/world";
 import {mat4, vec3} from "../core/declarativeLinalg";
-import {
-  LaunchSimpleModal,
-  Player,
-  PlayerDraw,
-  PlayerMove, PlayerRemoteMove, PlayerTargetMove, SimpleModal, SimpleModel, SimpleModelDraw,
-  Test,
-  TestDraw, Tree, TreeDraw, Usable, UsableDraw, UsableUse,
-  Wall
-} from "../core/components";
 import {ContentsManager, disposeContents, initContents} from "../core/contents";
 import OtIntroduction from "../components/OtIntroduction";
 import seedrandom from "seedrandom"
 import getConfig from "next/config";
 import {useRouter} from "next/router";
 import {useGlobalContext} from "./_app";
+import {Player, PlayerDraw, PlayerMove, PlayerRemoteMove, PlayerTargetMove} from "../core/components/player";
+import {LaunchSimpleModal, SimpleModal, SimpleModel, SimpleModelDraw} from "../core/components/simple";
+import {Usable, UsableDraw, UsableUse} from "../core/components/usable";
+import {Tree, TreeDraw} from "../core/components/decoration";
+import {Test, TestDraw, Wall} from "../core/components";
+import {World} from "../core/world/world";
+import {emptyEcs, SparseStorage} from "../core/world/ecs";
+import {ref, RefCell} from "../core/world";
+import {KeyState} from "../core/world/input";
 
 interface OuterState {
   width: number
   height: number
   userId: string | null
-  world: World<string, any> | null
+  world: _world<string, any> | null
   ws: WebSocket | null
 }
 

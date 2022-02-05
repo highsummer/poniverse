@@ -1,8 +1,7 @@
-import React from "react"
-import {KeyedSystem, ref, RefCell} from "./world";
-import {mat4, vec2, vec3, vec4} from "./declarativeLinalg";
-import {ContentsManager, Mesh, Texture} from "./contents";
-import seedrandom from "seedrandom";
+import {mat4, vec2, vec3, vec4} from "../declarativeLinalg";
+import {KeyedSystem, ref, RefCell} from "../world";
+import {ContentsManager} from "../contents";
+import {Rect, Wall} from "./index";
 
 export interface Player {
   type: string
@@ -21,23 +20,10 @@ export interface Player {
 }
 
 const MoveAnimationFrameScale = 100
-const PlayerMaskSize = 0.3
+export const PlayerMaskSize = 0.3
 const PlayerRemoteUpdateInterval = 200
 
-export interface Rect {
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-}
-
-export namespace Rect {
-  export function translate(r: Rect, x: number, y: number): Rect {
-    return { x1: r.x1 + x, y1: r.y1 + y, x2: r.x2 + x, y2: r.y2 + y }
-  }
-}
-
-function aabbCollision(r1: Rect, r2: Rect): boolean {
+export function aabbCollision(r1: Rect, r2: Rect): boolean {
   return r1.x1 < r2.x2 && r1.x2 > r2.x1 && r1.y1 < r2.y2 && r1.y2 > r2.y1
 }
 
@@ -338,168 +324,3 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
       draw.popMatrix()
     })
 }
-
-export interface Test {}
-
-export const TestDraw: KeyedSystem<{ transform: RefCell<mat4>, test: RefCell<Test> }> = (world, time) => {
-  const draw = world.drawContext
-  world.ecs.join("transform", "test")
-    .forEach(([key, transform, test]) => {
-      draw.drawDeferPosition(mat4.getTranslation(transform.value), () => {
-        draw.pushMatrix()
-        draw.addMatrix(transform.value)
-        draw.addMatrix(mat4.fromXRotation(Math.PI / 2))
-        draw.setAmbient(1)
-        draw.setTexture(ContentsManager.texture.grass)
-        world.drawContext.draw(ContentsManager.mesh.sprite)
-        draw.popMatrix()
-      })
-    })
-}
-
-export interface SimpleModel {
-  texture: () => Texture
-  mesh: () => Mesh
-  ambient?: number
-}
-
-export const SimpleModelDraw: KeyedSystem<{ transform: RefCell<mat4>, simpleModel: RefCell<SimpleModel> }> = (world, time) => {
-  const draw = world.drawContext
-  world.ecs.join("transform", "simpleModel")
-    .forEach(([key, transform, simpleModel]) => {
-      draw.pushMatrix()
-      draw.addMatrix(transform.value)
-      draw.setAmbient(simpleModel.value.ambient ?? 0.5)
-      draw.setTexture(simpleModel.value.texture())
-      world.drawContext.draw(simpleModel.value.mesh())
-      draw.popMatrix()
-    })
-}
-
-export interface Wall {
-  mask: Rect
-}
-
-export interface Usable {
-  range: Rect
-  label: string
-  hover: boolean
-}
-
-export const UsableUse: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell<Player>, usable: RefCell<Usable> }> = (world, time) => {
-  world.ecs.join("transform", "player")
-    .filter(([key, transform, player]) => player.value.control)
-    .forEach(([key, playerTransform, player]) => {
-      const position = mat4.getTranslation(playerTransform.value)
-      const playerMask: Rect = Rect.translate(
-        {
-          x1: -PlayerMaskSize / 2,
-          y1: -PlayerMaskSize / 2,
-          x2: PlayerMaskSize / 2,
-          y2: PlayerMaskSize / 2,
-        }, position[0], position[1]
-      )
-
-      world.ecs.join("transform", "usable")
-        .forEach(([key, usableTransform, usable]) => {
-          usable.value.hover = false
-
-          const position = mat4.getTranslation(usableTransform.value)
-          const usableMask: Rect = Rect.translate(usable.value.range, position[0], position[1])
-
-          if (aabbCollision(playerMask, usableMask)) {
-            usable.value.hover = true
-          }
-        })
-    })
-}
-
-export const UsableDraw: KeyedSystem<{ transform: RefCell<mat4>, usable: RefCell<Usable> }> = (world, time) => {
-  const draw = world.drawContext
-
-  world.ecs.join("transform", "usable")
-    .forEach(([key, transform, usable]) => {
-      if (usable.value.hover) {
-        draw.drawText(
-          "usableLabel",
-          `${usable.value.label}`,
-          vec3.add(mat4.getTranslation(transform.value), vec3.fromValues(0, 0, 1.75)),
-          {
-            backgroundColor: "#000a",
-            padding: "0 3px",
-            borderRadius: "3px",
-            color: "yellow",
-            fontWeight: "bold",
-          },
-        )
-      }
-    })
-}
-
-export interface SimpleModal {
-  contents: () => React.ReactNode
-}
-
-export const LaunchSimpleModal: KeyedSystem<{ transform: RefCell<mat4>, usable: RefCell<Usable>, simpleModal: RefCell<SimpleModal> }> = (world, time) => {
-  world.ecs.join("transform", "usable", "simpleModal")
-    .forEach(([key, transform, usable, simpleModal]) => {
-      if (usable.value.hover && (world.keyState.keysPressed.use || world.keyState.mouse.tap)) {
-        world.launchModal(simpleModal.value.contents())
-      }
-    })
-}
-
-export interface Tree {
-  seed: number
-}
-
-export const TreeDraw: KeyedSystem<{ transform: RefCell<mat4>, tree: RefCell<Tree> }> = (world, time) => {
-  const draw = world.drawContext
-  world.ecs.join("transform", "tree")
-    .forEach(([key, transform, tree]) => {
-      const random = seedrandom(tree.value.seed.toString())
-
-      draw.pushMatrix()
-      draw.addMatrix(transform.value)
-      draw.addMatrix(mat4.fromZRotation(random() * Math.PI * 2))
-      draw.setAmbient(0.5)
-      draw.setTexture(ContentsManager.texture.bark)
-      draw.draw(ContentsManager.mesh.stem)
-      draw.popMatrix()
-
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j <= i; j++) {
-          const factors: vec3 = [random() - 0.5, random() - 0.5, random() - 0.5]
-          const displacement = vec3.add(
-            vec3.multiply(
-              vec3.add(
-                vec3.multiply(
-                  factors,
-                  [0.25, 0.5, 0.25],
-                ),
-                [(j - i * 0.5) * 0.8, -0.25, 1 - i * 0.5],
-              ),
-              [1.5, 1, 1.5]
-            ),
-            [0, 0, 2.5]
-          )
-
-          draw.drawDeferPosition(
-            vec3.add(mat4.getTranslation(transform.value), displacement),
-            () => {
-              draw.setAmbient(1.0)
-              draw.pushMatrix()
-              draw.addMatrix(transform.value)
-              draw.addMatrix(mat4.fromTranslation(displacement))
-              draw.addMatrix(mat4.fromXRotation(Math.PI / 2))
-              draw.addMatrix(mat4.fromZRotation(random() * Math.PI * 2))
-              draw.setTexture(ContentsManager.texture.bush1)
-              draw.draw(ContentsManager.mesh.sprite)
-              draw.popMatrix()
-            }
-          )
-        }
-      }
-    })
-}
-
