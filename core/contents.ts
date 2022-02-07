@@ -6,6 +6,8 @@ import {vec2} from "gl-matrix";
 export let ContentsManager: Contents
 
 export function initContents(gl: WebGL2RenderingContext, shader: WebGLProgram) {
+  GlobalCacheAsyncMesh.gl = gl
+  GlobalCacheAsyncMesh.shader = shader
   ContentsManager = new Contents(gl, shader)
 }
 
@@ -61,6 +63,29 @@ export class AsyncMesh implements Mesh {
         this.innerMesh = parseObjFile(new MeshBuilder(gl, shader), obj).build()
       }
     })
+  }
+
+  onDelete() {
+    this.innerMesh?.onDelete()
+  }
+
+  draw() {
+    this.innerMesh?.draw()
+  }
+}
+
+const GlobalCacheAsyncMeshCache: Record<string, Mesh> = {}
+export class GlobalCacheAsyncMesh implements Mesh {
+  static gl: WebGL2RenderingContext
+  static shader: WebGLProgram
+
+  innerMesh: Mesh | null
+
+  constructor(src: string) {
+    if (!(src in GlobalCacheAsyncMeshCache)) {
+      GlobalCacheAsyncMeshCache[src] = new AsyncMesh(GlobalCacheAsyncMesh.gl, GlobalCacheAsyncMesh.shader, src)
+    }
+    this.innerMesh = GlobalCacheAsyncMeshCache[src]
   }
 
   onDelete() {
@@ -171,11 +196,11 @@ export class MeshBuilder {
   }
 }
 
-export interface Texture {
+export interface Texture extends Disposable{
   getTexture(): WebGLTexture
 }
 
-export class AsyncTexture implements Disposable, Texture {
+export class AsyncTexture implements Texture {
   gl: WebGL2RenderingContext
   texture: WebGLTexture
 
@@ -209,6 +234,28 @@ export class AsyncTexture implements Disposable, Texture {
 
   getTexture() {
     return this.texture
+  }
+}
+
+const GlobalCacheAsyncTextureCache: Record<string, Texture> = {}
+export class GlobalCacheAsyncTexture implements Texture {
+  static gl: WebGL2RenderingContext
+
+  innerTexture: Texture | null
+
+  constructor(src: string) {
+    if (!(src in GlobalCacheAsyncTextureCache)) {
+      GlobalCacheAsyncTextureCache[src] = new AsyncTexture(GlobalCacheAsyncMesh.gl, src)
+    }
+    this.innerTexture = GlobalCacheAsyncTextureCache[src]
+  }
+
+  onDelete() {
+    this.innerTexture?.onDelete()
+  }
+
+  getTexture() {
+    return this.innerTexture?.getTexture() ?? -1
   }
 }
 
@@ -255,7 +302,7 @@ export class Contents implements Disposable {
     "ponix[senior]" | "ponixJump[senior]" | "ponix[team_leader]" | "ponixJump[team_leader]" |
     "ponix[mentor]" | "ponixJump[mentor]" | "ponix[frontperson]" | "ponixJump[frontperson]" |
     "noise" | "grass" | "grassPattern" | "marble" | "sky" | "bark" | "bush1" |
-    "studentCommunityHall" | "alphaMask" | "board",
+    "studentCommunityHall" | "alphaMask" | "board" | "brick1" | "brick2" | "brick3",
     Texture>
 
   constructor(gl: WebGL2RenderingContext, shader: WebGLProgram) {
@@ -377,6 +424,9 @@ export class Contents implements Disposable {
       studentCommunityHall: new AsyncTexture(gl, "/textures/student_community_hall.png", true),
       alphaMask: new AsyncTexture(gl, "/textures/alpha_mask.png", true),
       board: new AsyncTexture(gl, "/textures/board.png", true),
+      brick1: new AsyncTexture(gl, "/textures/brick_1.png", true),
+      brick2: new AsyncTexture(gl, "/textures/brick_2.png", true),
+      brick3: new AsyncTexture(gl, "/textures/brick_3.png", true),
       ...Object.fromEntries(
         [
           "analyst", "athletic", "engineer", "entrepreneur", "general_affairs", "prepco",

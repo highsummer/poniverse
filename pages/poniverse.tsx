@@ -1,7 +1,13 @@
 import React from "react"
 import type { NextPage } from "next"
 import {mat4, vec3} from "../core/declarativeLinalg";
-import {ContentsManager, disposeContents, initContents} from "../core/contents";
+import {
+  ContentsManager,
+  disposeContents,
+  GlobalCacheAsyncMesh,
+  GlobalCacheAsyncTexture,
+  initContents
+} from "../core/contents";
 import OtIntroduction from "../components/OtIntroduction";
 import seedrandom from "seedrandom"
 import getConfig from "next/config";
@@ -135,6 +141,19 @@ const Poniverse: NextPage = () => {
           .register("update", EmotionButtonInteract)
           .register("draw", EmotionButtonDraw)
 
+        const keyState = new KeyState(document)
+
+        const world = new World(
+          canvas, window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio,
+          ecs, keyState,
+          (node: React.ReactNode) => {
+            setModalContents(node)
+            setShowModal(true)
+          }
+        )
+
+        initContents(gl, world.drawContext.defaultShader.program)
+
         ecs.create(
           "transform", ref(mat4.create()),
           "simpleModel", ref({
@@ -220,6 +239,26 @@ const Poniverse: NextPage = () => {
           }
         }
 
+        for (let i = -3; i < 4; i++) {
+          for (let j = -3; j < 4; j++) {
+            (() => {
+              const x = j * 2.5
+              const y = i * 2.5
+              const texture = `/textures/brick_${Math.floor(random() * 3) + 1}.png`
+              ecs.create(
+                "transform", ref(mat4.mulAll(
+                  mat4.fromTranslation(vec3.fromValues(x, y, 0.1)),
+                  mat4.fromScaling(vec3.fromValues(1.25, 1.25, 1.0)),
+                )),
+                "simpleModel", ref({
+                  mesh: () => ContentsManager.mesh.tessellatedPlane,
+                  texture: () => new GlobalCacheAsyncTexture(texture),
+                })
+              )
+            })()
+          }
+        }
+
         for (let i = -2; i < 0; i++) {
           for (let j = -3; j < 4; j++) {
             ecs.create(
@@ -277,19 +316,6 @@ const Poniverse: NextPage = () => {
             }),
           )
         }
-
-        const keyState = new KeyState(document)
-
-        const world = new World(
-          canvas, window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio,
-          ecs, keyState,
-          (node: React.ReactNode) => {
-            setModalContents(node)
-            setShowModal(true)
-          }
-        )
-
-        initContents(gl, world.drawContext.defaultShader.program)
 
         let stopWebSocket = false
         const connect = () => {
