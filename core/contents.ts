@@ -242,7 +242,7 @@ export class DataTexture implements Disposable, Texture {
 
 export class Contents implements Disposable {
   mesh: Record<
-    "test" | "ponixTest" | "sprite" | "spriteMirror" | "tessellatedPlane" | "slogan" | "logo" | "sphere" |
+    "test" | "sprite" | "spriteMirror" | "tessellatedPlane" | "slogan" | "logo" | "sphere" |
     "toStatue" | "stem" | "studentCommunityHall" | "board",
     Mesh>
   texture: Record<
@@ -254,7 +254,7 @@ export class Contents implements Disposable {
     "ponix[reader]" | "ponixJump[reader]" | "ponix[moderator]" | "ponixJump[moderator]" |
     "ponix[senior]" | "ponixJump[senior]" | "ponix[team_leader]" | "ponixJump[team_leader]" |
     "ponix[mentor]" | "ponixJump[mentor]" | "ponix[frontperson]" | "ponixJump[frontperson]" |
-    "noise" | "ponix" | "ponixJump" | "grass" | "grassPattern" | "marble" | "sky" | "bark" | "bush1" |
+    "noise" | "grass" | "grassPattern" | "marble" | "sky" | "bark" | "bush1" |
     "studentCommunityHall" | "alphaMask" | "board",
     Texture>
 
@@ -265,7 +265,6 @@ export class Contents implements Disposable {
         .vertex([-1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .vertex([1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .build(),
-      ponixTest: new AsyncMesh(gl, shader, "ponix_test.obj"),
       sprite: new MeshBuilder(gl, shader)
         .vertex([-1, 1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .vertex([-1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 1])
@@ -300,8 +299,8 @@ export class Contents implements Disposable {
 
         return builder.build()
       })(),
-      slogan: new AsyncMesh(gl, shader, "/slogan.obj"),
-      logo: new AsyncMesh(gl, shader, "/logo.obj"),
+      slogan: new AsyncMesh(gl, shader, "/models/slogan.obj"),
+      logo: new AsyncMesh(gl, shader, "/models/logo.obj"),
       sphere: (() => {
         const builder = new MeshBuilder(gl, shader)
         const dPhi = Math.PI / 8;
@@ -350,10 +349,10 @@ export class Contents implements Disposable {
         }
         return builder.build()
       })(),
-      toStatue: new AsyncMesh(gl, shader, "/to_statue.obj"),
-      stem: new AsyncMesh(gl, shader, "/stem.obj"),
-      studentCommunityHall: new AsyncMesh(gl, shader, "/student_community_hall.obj"),
-      board: new AsyncMesh(gl, shader, "/board.obj"),
+      toStatue: new AsyncMesh(gl, shader, "/models/to_statue.obj"),
+      stem: new AsyncMesh(gl, shader, "/models/stem.obj"),
+      studentCommunityHall: new AsyncMesh(gl, shader, "/models/student_community_hall.obj"),
+      board: new AsyncMesh(gl, shader, "/models/board.obj"),
     }
 
     this.texture = {
@@ -369,17 +368,15 @@ export class Contents implements Disposable {
         32,
         true,
       ),
-      ponix: new AsyncTexture(gl, "/ponix.png"),
-      ponixJump: new AsyncTexture(gl, "/ponix_jump.png"),
-      grass: new AsyncTexture(gl, "/grass.png"),
-      grassPattern: new AsyncTexture(gl, "/grass_pattern.png", true),
-      marble: new AsyncTexture(gl, "/marble.png", true),
-      sky: new AsyncTexture(gl, "/sky.png", true),
-      bark: new AsyncTexture(gl, "/bark.png", true),
-      bush1: new AsyncTexture(gl, "/bush_1.png", true),
-      studentCommunityHall: new AsyncTexture(gl, "/student_community_hall.png", true),
-      alphaMask: new AsyncTexture(gl, "/alpha_mask.png", true),
-      board: new AsyncTexture(gl, "/board.png", true),
+      grass: new AsyncTexture(gl, "/textures/grass.png"),
+      grassPattern: new AsyncTexture(gl, "/textures/grass_pattern.png", true),
+      marble: new AsyncTexture(gl, "/textures/marble.png", true),
+      sky: new AsyncTexture(gl, "/textures/sky.png", true),
+      bark: new AsyncTexture(gl, "/textures/bark.png", true),
+      bush1: new AsyncTexture(gl, "/textures/bush_1.png", true),
+      studentCommunityHall: new AsyncTexture(gl, "/textures/student_community_hall.png", true),
+      alphaMask: new AsyncTexture(gl, "/textures/alpha_mask.png", true),
+      board: new AsyncTexture(gl, "/textures/board.png", true),
       ...Object.fromEntries(
         [
           "analyst", "athletic", "engineer", "entrepreneur", "general_affairs", "prepco",
@@ -387,8 +384,8 @@ export class Contents implements Disposable {
           "senior", "team_leader", "mentor", "frontperson"
         ].flatMap(type => {
           return [
-            [`ponix[${type}]`, new AsyncTexture(gl, `/ponix_${type}.png`)],
-            [`ponixJump[${type}]`, new AsyncTexture(gl, `/ponix_jump_${type}.png`)]
+            [`ponix[${type}]`, new AsyncTexture(gl, `/sprites/ponix_${type}.png`)],
+            [`ponixJump[${type}]`, new AsyncTexture(gl, `/sprites/ponix_jump_${type}.png`)]
           ]
         })
       ) as any as Record<

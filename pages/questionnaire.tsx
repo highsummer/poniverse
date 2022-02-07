@@ -170,9 +170,9 @@ Questions.forEach(question => {
 const QuestionPane: React.FunctionComponent<{ question: Question, addScore: (score: Score) => void }> = props => {
   const [selected, setSelected] = React.useState<number | null>(null)
   const balloonSrc = React.useMemo(() => {
-    return props.question.choices.map(c => `/text_balloon_${Math.floor(Math.random() * 3) + 1}.svg`)
+    return props.question.choices.map(c => `/sprites/text_balloon_${Math.floor(Math.random() * 3) + 1}.svg`)
   }, [])
-  const dashedLineSrc = React.useMemo(() => `/dashed_line_${Math.floor(Math.random() * 3) + 1}.svg`, [])
+  const dashedLineSrc = React.useMemo(() => `/sprites/dashed_line_${Math.floor(Math.random() * 3) + 1}.svg`, [])
 
   return (
     <div className={"w-48 flex flex-col items-center"}>

@@ -158,7 +158,7 @@ const Result: NextPage = () => {
                 {category.name}
               </div>
               <div className={"mb-6"}>
-                <img src={`/ponix_${category.id}.png`} />
+                <img src={`/sprites/ponix_${category.id}.png`} />
               </div>
               <div className={"w-full"}>
                 당신은 {category.description}<br/><strong>“{category.adjective}, {category.name}”</strong><br/>입니다.
@@ -178,7 +178,7 @@ const Result: NextPage = () => {
                     return (
                       <div key={friendCategory.id} className={"w-1/2 px-4"}>
                         <div className={"flex flex-col w-full"}>
-                          <img src={`/ponix_${friendCategory.id}.png`} className={"w-full mb-3"} />
+                          <img src={`/sprites/ponix_${friendCategory.id}.png`} className={"w-full mb-3"} />
                           <div className={"w-full"}>
                             {friendCategory.adjective}
                           </div>
@@ -215,7 +215,7 @@ const Result: NextPage = () => {
             <div className={"w-0 overflow-visible"}>
               <a href={"/poniverse"}>
                 <img
-                  src={"/toniverse.png"}
+                  src={"/sprites/toniverse.png"}
                   style={{
                     minWidth: "60rem",
                     transform: "translate(-50%, 0)",
