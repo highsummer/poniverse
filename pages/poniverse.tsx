@@ -171,6 +171,15 @@ const Poniverse: NextPage = () => {
           "wall", ref({ mask: { x1: -4, y1: -4.7, x2: 4, y2: 2.5 } })
         )
 
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(-15.0, 0.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => ContentsManager.mesh.board,
+            texture: () => ContentsManager.texture.board,
+          }),
+          "wall", ref({ mask: { x1: -1, y1: -0.3, x2: 1, y2: 0.3 } })
+        )
+
         for (const [i, text] of [
           "❤️", "🎉", "✅", "😭",
           "🔥", "👀", "⬅️", "➡️",

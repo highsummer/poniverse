@@ -3,13 +3,6 @@ import {parseObjFile} from "./objFile";
 import {vec3, vec4} from "./declarativeLinalg";
 import {vec2} from "gl-matrix";
 
-const PonixTestSource = require("../public/ponix_test.obj")
-const SloganSource = require("../public/slogan.obj")
-const LogoSource = require("../public/logo.obj")
-const ToStatueSource = require("../public/to_statue.obj")
-const StemSource = require("../public/stem.obj")
-const StudentCommunityHallSource = require("../public/student_community_hall.obj")
-
 export let ContentsManager: Contents
 
 export function initContents(gl: WebGL2RenderingContext, shader: WebGLProgram) {
@@ -53,7 +46,33 @@ const DefaultShaderStride = Object.entries(DefaultShaderAttributes)
     0,
   )
 
-export class Mesh implements Disposable {
+export interface Mesh extends Disposable {
+  draw(): void
+}
+
+export class AsyncMesh implements Mesh {
+  innerMesh: Mesh | null
+
+  constructor(gl: WebGL2RenderingContext, shader: WebGLProgram, src: string) {
+    this.innerMesh = null
+    fetch(src).then(async res => {
+      if (res.status === 200) {
+        const obj = await res.text()
+        this.innerMesh = parseObjFile(new MeshBuilder(gl, shader), obj).build()
+      }
+    })
+  }
+
+  onDelete() {
+    this.innerMesh?.onDelete()
+  }
+
+  draw() {
+    this.innerMesh?.draw()
+  }
+}
+
+export class InlineMesh implements Mesh {
   gl: WebGL2RenderingContext
   shader: WebGLProgram
   vertexBuffer: WebGLBuffer
@@ -148,7 +167,7 @@ export class MeshBuilder {
   }
 
   build(): Mesh {
-    return new Mesh(this.gl, this.shader, new Float32Array(this.vertices))
+    return new InlineMesh(this.gl, this.shader, new Float32Array(this.vertices))
   }
 }
 
@@ -224,7 +243,7 @@ export class DataTexture implements Disposable, Texture {
 export class Contents implements Disposable {
   mesh: Record<
     "test" | "ponixTest" | "sprite" | "spriteMirror" | "tessellatedPlane" | "slogan" | "logo" | "sphere" |
-    "toStatue" | "stem" | "studentCommunityHall",
+    "toStatue" | "stem" | "studentCommunityHall" | "board",
     Mesh>
   texture: Record<
     "ponix[analyst]" | "ponixJump[analyst]" | "ponix[athletic]" | "ponixJump[athletic]" |
@@ -236,7 +255,7 @@ export class Contents implements Disposable {
     "ponix[senior]" | "ponixJump[senior]" | "ponix[team_leader]" | "ponixJump[team_leader]" |
     "ponix[mentor]" | "ponixJump[mentor]" | "ponix[frontperson]" | "ponixJump[frontperson]" |
     "noise" | "ponix" | "ponixJump" | "grass" | "grassPattern" | "marble" | "sky" | "bark" | "bush1" |
-    "studentCommunityHall" | "alphaMask",
+    "studentCommunityHall" | "alphaMask" | "board",
     Texture>
 
   constructor(gl: WebGL2RenderingContext, shader: WebGLProgram) {
@@ -246,7 +265,7 @@ export class Contents implements Disposable {
         .vertex([-1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .vertex([1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .build(),
-      ponixTest: parseObjFile(new MeshBuilder(gl, shader), PonixTestSource).build(),
+      ponixTest: new AsyncMesh(gl, shader, "ponix_test.obj"),
       sprite: new MeshBuilder(gl, shader)
         .vertex([-1, 1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .vertex([-1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 1])
@@ -281,8 +300,8 @@ export class Contents implements Disposable {
 
         return builder.build()
       })(),
-      slogan: parseObjFile(new MeshBuilder(gl, shader), SloganSource).build(),
-      logo: parseObjFile(new MeshBuilder(gl, shader), LogoSource).build(),
+      slogan: new AsyncMesh(gl, shader, "/slogan.obj"),
+      logo: new AsyncMesh(gl, shader, "/logo.obj"),
       sphere: (() => {
         const builder = new MeshBuilder(gl, shader)
         const dPhi = Math.PI / 8;
@@ -331,9 +350,10 @@ export class Contents implements Disposable {
         }
         return builder.build()
       })(),
-      toStatue: parseObjFile(new MeshBuilder(gl, shader), ToStatueSource).build(),
-      stem: parseObjFile(new MeshBuilder(gl, shader), StemSource).build(),
-      studentCommunityHall: parseObjFile(new MeshBuilder(gl, shader), StudentCommunityHallSource).build(),
+      toStatue: new AsyncMesh(gl, shader, "/to_statue.obj"),
+      stem: new AsyncMesh(gl, shader, "/stem.obj"),
+      studentCommunityHall: new AsyncMesh(gl, shader, "/student_community_hall.obj"),
+      board: new AsyncMesh(gl, shader, "/board.obj"),
     }
 
     this.texture = {
@@ -359,6 +379,7 @@ export class Contents implements Disposable {
       bush1: new AsyncTexture(gl, "/bush_1.png", true),
       studentCommunityHall: new AsyncTexture(gl, "/student_community_hall.png", true),
       alphaMask: new AsyncTexture(gl, "/alpha_mask.png", true),
+      board: new AsyncTexture(gl, "/board.png", true),
       ...Object.fromEntries(
         [
           "analyst", "athletic", "engineer", "entrepreneur", "general_affairs", "prepco",
