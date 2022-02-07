@@ -242,7 +242,9 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
         draw.addMatrix(transform.value)
         draw.addMatrix(mat4.fromTranslation(vec3.fromValues(0, 0, animationFrame === 0 ? 1 : 1.1)))
         draw.addMatrix(mat4.fromXRotation(Math.PI / 2))
-        draw.setHiderPivot([0.0, 0.0, 0.75])
+        if (player.value.control) {
+          draw.setHiderPivot([0.0, 0.0, 0.75])
+        }
         draw.setAmbient(1)
         draw.setTexture(
           animationFrame === 0 ?
@@ -317,12 +319,14 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
         )
       }
 
-      draw.pushMatrix()
-      draw.addMatrix(transform.value)
-      draw.addMatrix(mat4.fromScaling(vec3.fromValues(60.0, 60.0, -60.0)))
-      draw.setAmbient(1)
-      draw.setTexture(ContentsManager.texture.sky)
-      world.drawContext.draw(ContentsManager.mesh.sphere)
-      draw.popMatrix()
+      if (player.value.control) {
+        draw.pushMatrix()
+        draw.addMatrix(transform.value)
+        draw.addMatrix(mat4.fromScaling(vec3.fromValues(60.0, 60.0, -60.0)))
+        draw.setAmbient(1)
+        draw.setTexture(ContentsManager.texture.sky)
+        world.drawContext.draw(ContentsManager.mesh.sphere)
+        draw.popMatrix()
+      }
     })
 }

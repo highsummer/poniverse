@@ -84,6 +84,7 @@ const Modal: React.FunctionComponent<{ show: boolean, onHide?: () => void }> = p
 }
 
 const Poniverse: NextPage = () => {
+  const { publicRuntimeConfig } = getConfig()
   const router = useRouter()
   const globalCtx = useGlobalContext()
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
@@ -162,12 +163,12 @@ const Poniverse: NextPage = () => {
         )
 
         ecs.create(
-          "transform", ref(mat4.fromTranslation(vec3.fromValues(10.0, 2.0, 0.0))),
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(-0.0, 15.0, 0.0))),
           "simpleModel", ref({
             mesh: () => ContentsManager.mesh.studentCommunityHall,
             texture: () => ContentsManager.texture.studentCommunityHall,
           }),
-          "wall", ref({ mask: { x1: -1.75, y1: -1.75, x2: 1.75, y2: 1.75 } })
+          "wall", ref({ mask: { x1: -4, y1: -4.7, x2: 4, y2: 2.5 } })
         )
 
         for (const [i, text] of [
@@ -210,10 +211,30 @@ const Poniverse: NextPage = () => {
           }
         }
 
-        for (let i = -3; i < 0; i++) {
+        for (let i = -2; i < 0; i++) {
           for (let j = -3; j < 4; j++) {
             ecs.create(
               "transform", ref(mat4.mulAll(
+                mat4.fromTranslation(vec3.fromValues(-18.0, 0.0, 0.0)),
+                mat4.fromTranslation(vec3.fromValues(j * 4, i * 4 + 18, 0.0)),
+                mat4.fromTranslation(vec3.fromValues((random() - 0.5) * 3, (random() - 0.5) * 3, 0.0)),
+                mat4.fromScaling(vec3.fromValues(1.0, 1.0, 1.0)),
+              )),
+              "tree", ref({
+                seed: random(),
+              }),
+              "wall", ref({
+                mask: { x1: -0.5, y1: -0.5, x2: 0.5, y2: 0.5 }
+              })
+            )
+          }
+        }
+
+        for (let i = -2; i < 0; i++) {
+          for (let j = -3; j < 4; j++) {
+            ecs.create(
+              "transform", ref(mat4.mulAll(
+                mat4.fromTranslation(vec3.fromValues(18.0, 0.0, 0.0)),
                 mat4.fromTranslation(vec3.fromValues(j * 4, i * 4 + 18, 0.0)),
                 mat4.fromTranslation(vec3.fromValues((random() - 0.5) * 3, (random() - 0.5) * 3, 0.0)),
                 mat4.fromScaling(vec3.fromValues(1.0, 1.0, 1.0)),
@@ -229,12 +250,12 @@ const Poniverse: NextPage = () => {
         }
 
 
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 300; i++) {
           ecs.create(
             "transform", ref(mat4.mulAll(
               mat4.fromTranslation(vec3.fromValues(
-                (random() * 2 - 1) * 10,
-                (random() * 2 - 1) * 10,
+                (random() * 2 - 1) * 30,
+                (random() * 2 - 1) * 30,
                 0.35,
               )),
               mat4.fromXRotation(Math.PI / 2),
@@ -263,7 +284,7 @@ const Poniverse: NextPage = () => {
 
         let stopWebSocket = false
         const connect = () => {
-          const ws = new WebSocket("wss://a3ek0tva1l.execute-api.ap-northeast-2.amazonaws.com/dev")
+          const ws = new WebSocket("wss://" + publicRuntimeConfig.URL_WEBSOCKET)
           outerStateRef.current.ws = ws
 
           ws.onopen = (e) => {

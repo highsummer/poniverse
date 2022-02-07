@@ -224,12 +224,12 @@ const SignatureToResult: Record<string, string> = {
   ISFJ: "ta",
   ENTP: "journalist",
   ENTJ: "president",
-  ENFP: "reader",
+  ENFP: "frontperson",
   ENFJ: "moderator",
   ESTP: "senior",
   ESTJ: "team_leader",
   ESFP: "mentor",
-  ESFJ: "frontperson",
+  ESFJ: "reader",
 }
 
 const Questionnaire: NextPage = () => {
