@@ -26,7 +26,7 @@ void addOcclusion(vec2 dUV, float weight) {
     occlusion += min(
         1.0,
         smoothstep(-1.0, -0.3, -dot(normal, normalOther)) +
-        smoothstep(0.0, distLimit / cos(normal.z * PI / 2.0) * position.z, abs(position.z - positionOther.z))
+        smoothstep(0.0, distLimit * position.z, abs(position.z - positionOther.z))
     ) * weight;
 }
 
