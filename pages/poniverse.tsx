@@ -222,40 +222,71 @@ const Poniverse: NextPage = () => {
 
         const random = seedrandom("")
 
-        for (let i = -3; i < 4; i++) {
-          for (let j = -3; j < 4; j++) {
-            const x = j * 10
-            const y = i * 10
+        const unitTile = 4
+        const offset = [0, 0]
+
+        const placeGrass = (x: number, y: number) => {
+          ecs.create(
+            "transform", ref(mat4.mulAll(
+              mat4.fromTranslation(vec3.fromValues((x - offset[0]) * unitTile, (y - offset[1]) * unitTile, 0.0)),
+              mat4.fromScaling(vec3.fromValues(unitTile / 2, unitTile / 2, 1.0)),
+            )),
+            "simpleModel", ref({
+              mesh: () => ContentsManager.mesh.tessellatedPlane,
+              texture: () => ContentsManager.texture.grassPattern,
+            })
+          )
+
+          for (let i = 0; i < random() * 2; i++) {
             ecs.create(
               "transform", ref(mat4.mulAll(
-                mat4.fromTranslation(vec3.fromValues(x, y, 0.0)),
-                mat4.fromScaling(vec3.fromValues(5.0, 5.0, 1.0)),
+                mat4.fromTranslation(vec3.fromValues((x - offset[0]) * unitTile, (y - offset[1]) * unitTile, 0.0)),
+                mat4.fromTranslation(vec3.fromValues(
+                  (random() * 2 - 1) * unitTile / 2,
+                  (random() * 2 - 1) * unitTile / 2,
+                  0.35,
+                )),
+                mat4.fromXRotation(Math.PI / 2),
+                mat4.fromScaling([0.35, 0.35, 0.35]),
               )),
               "simpleModel", ref({
-                mesh: () => ContentsManager.mesh.tessellatedPlane,
-                texture: () => ContentsManager.texture.grassPattern,
-              })
+                mesh: () => ContentsManager.mesh.sprite,
+                texture: () => ContentsManager.texture.grass,
+                ambient: 1,
+              }),
             )
           }
         }
 
-        for (let i = -3; i < 4; i++) {
-          for (let j = -3; j < 4; j++) {
-            (() => {
-              const x = j * 2.5
-              const y = i * 2.5
-              const texture = `/textures/brick_${Math.floor(random() * 3) + 1}.png`
-              ecs.create(
-                "transform", ref(mat4.mulAll(
-                  mat4.fromTranslation(vec3.fromValues(x, y, 0.1)),
-                  mat4.fromScaling(vec3.fromValues(1.25, 1.25, 1.0)),
-                )),
-                "simpleModel", ref({
-                  mesh: () => ContentsManager.mesh.tessellatedPlane,
-                  texture: () => new GlobalCacheAsyncTexture(texture),
-                })
-              )
-            })()
+        const placeBrick = (x: number, y: number) => {
+          const texture = `/textures/brick_${Math.floor(random() * 3) + 1}.png`
+          ecs.create(
+            "transform", ref(mat4.mulAll(
+              mat4.fromTranslation(vec3.fromValues((x - offset[0]) * unitTile, (y - offset[1]) * unitTile, 0.0)),
+              mat4.fromScaling(vec3.fromValues(unitTile / 2, unitTile / 2, 1.0)),
+            )),
+            "simpleModel", ref({
+              mesh: () => ContentsManager.mesh.tessellatedPlane,
+              texture: () => new GlobalCacheAsyncTexture(texture),
+            })
+          )
+        }
+
+        for (let j = -8; j <= 8; j++) {
+          for (let i = 0; i <= 5; i++) {
+            placeGrass(j, i)
+          }
+        }
+
+        for (let j = -8; j <= 8; j++) {
+          placeBrick(j, -1)
+        }
+
+        for (let i = -6; i <= -2; i++) {
+          placeBrick(0, i)
+          for (let j = -8; j < 0; j++) {
+            placeGrass(j, i)
+            placeGrass(-j, i)
           }
         }
 
@@ -295,26 +326,6 @@ const Poniverse: NextPage = () => {
               })
             )
           }
-        }
-
-
-        for (let i = 0; i < 300; i++) {
-          ecs.create(
-            "transform", ref(mat4.mulAll(
-              mat4.fromTranslation(vec3.fromValues(
-                (random() * 2 - 1) * 30,
-                (random() * 2 - 1) * 30,
-                0.35,
-              )),
-              mat4.fromXRotation(Math.PI / 2),
-              mat4.fromScaling([0.35, 0.35, 0.35]),
-            )),
-            "simpleModel", ref({
-              mesh: () => ContentsManager.mesh.sprite,
-              texture: () => ContentsManager.texture.grass,
-              ambient: 1,
-            }),
-          )
         }
 
         let stopWebSocket = false
