@@ -322,7 +322,7 @@ export const PlayerDraw: KeyedSystem<{ transform: RefCell<mat4>, player: RefCell
       if (player.value.control) {
         draw.pushMatrix()
         draw.addMatrix(transform.value)
-        draw.addMatrix(mat4.fromScaling(vec3.fromValues(60.0, 60.0, -60.0)))
+        draw.addMatrix(mat4.fromScaling(vec3.fromValues(80.0, 80.0, -80.0)))
         draw.setAmbient(1)
         draw.setTexture(ContentsManager.texture.sky)
         world.drawContext.draw(ContentsManager.mesh.sphere)

@@ -249,6 +249,7 @@ export class DrawContext implements Disposable {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)
 
     this.gl.enable(this.gl.BLEND)
+    this.gl.blendEquationSeparate(this.gl.FUNC_ADD, this.gl.FUNC_ADD)
     this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA)
 
     this.gl.enable(this.gl.CULL_FACE)
@@ -382,7 +383,9 @@ export class DrawContext implements Disposable {
     this.gl.useProgram(this.outlineShader.program)
 
     this.gl.enable(this.gl.BLEND)
-    this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA)
+    this.gl.blendEquationSeparate(this.gl.FUNC_REVERSE_SUBTRACT, this.gl.FUNC_ADD)
+    this.gl.blendFunc(this.gl.ONE, this.gl.ONE)
+    // this.gl.blendFunc(this.gl.FUNC_REVERSE_SUBTRACT, this.gl.FUNC_REVERSE_SUBTRACT)
 
     this.gl.bindVertexArray(null)
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.directFetchScreenMesh)

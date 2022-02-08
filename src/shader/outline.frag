@@ -60,6 +60,6 @@ void main() {
     occlusion /= 6.0;
     occlusion = clamp((occlusion - correctionRange.x) / (correctionRange.y - correctionRange.x), 0.0, 1.0);
 
-    outOcclusion = vec4(0.0, 0.0, 0.0, occlusion);
+    outOcclusion = vec4(vec3(occlusion * 0.6), 0.0);
 //    outOcclusion = vec4(normal * 0.5 + 0.5, 1.0);
 }

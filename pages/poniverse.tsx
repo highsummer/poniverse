@@ -18,7 +18,7 @@ import {
   LaunchSimpleModal,
   SimpleModal,
   SimpleModel,
-  SimpleModelDraw, SimpleMultiModel,
+  SimpleModelDraw, SimpleMovement, SimpleMovementMove, SimpleMultiModel,
   SimpleMultiModelDraw
 } from "../core/components/simple";
 import {Usable, UsableDraw, UsableUse} from "../core/components/usable";
@@ -26,7 +26,7 @@ import {Tree, TreeDraw} from "../core/components/decoration";
 import {Test, TestDraw, Wall} from "../core/components";
 import {World} from "../core/world/world";
 import {emptyEcs, SparseStorage} from "../core/world/ecs";
-import {ref, RefCell} from "../core/world";
+import {ref, RefCell, Time} from "../core/world";
 import {KeyState} from "../core/world/input";
 import {
   Button,
@@ -134,6 +134,7 @@ const Poniverse: NextPage = () => {
           .attach("button", new SparseStorage<RefCell<Button>>())
           .attach("emotionButton", new SparseStorage<RefCell<EmotionButton>>())
           .attach("simpleMultiModel", new SparseStorage<RefCell<SimpleMultiModel>>())
+          .attach("simpleMovement", new SparseStorage<RefCell<SimpleMovement>>())
           .register("update", PlayerMove)
           .register("update", PlayerTargetMove)
           .register("update", PlayerRemoteMove)
@@ -148,6 +149,7 @@ const Poniverse: NextPage = () => {
           .register("update", EmotionButtonInteract)
           .register("draw", EmotionButtonDraw)
           .register("draw", SimpleMultiModelDraw)
+          .register("update", SimpleMovementMove)
 
         const keyState = new KeyState(document)
 
@@ -330,11 +332,13 @@ const Poniverse: NextPage = () => {
         )
 
         for (let i = -2; i < 0; i++) {
-          for (let j = -3; j < 4; j++) {
+          for (let j = -16; j <= 16; j++) {
+            if (j >= -1 && j <= 1) {
+              continue
+            }
             ecs.create(
               "transform", ref(mat4.mulAll(
-                mat4.fromTranslation(vec3.fromValues(-18.0, 0.0, 0.0)),
-                mat4.fromTranslation(vec3.fromValues(j * 4, i * 4 + 18, 0.0)),
+                mat4.fromTranslation(vec3.fromValues(j * unitTile, i * unitTile + 18, 0.0)),
                 mat4.fromTranslation(vec3.fromValues((random() - 0.5) * 3, (random() - 0.5) * 3, 0.0)),
                 mat4.fromScaling(vec3.fromValues(1.0, 1.0, 1.0)),
               )),
@@ -348,23 +352,27 @@ const Poniverse: NextPage = () => {
           }
         }
 
-        for (let i = -2; i < 0; i++) {
-          for (let j = -3; j < 4; j++) {
+        for (let i = 0; i < 30; i++) {
+          (() => {
+            const position: vec3 = [(random() * 2 - 1) * 160, (random() * 4 - 1) * 16, (random() * 16) + 12]
             ecs.create(
               "transform", ref(mat4.mulAll(
-                mat4.fromTranslation(vec3.fromValues(18.0, 0.0, 0.0)),
-                mat4.fromTranslation(vec3.fromValues(j * 4, i * 4 + 18, 0.0)),
-                mat4.fromTranslation(vec3.fromValues((random() - 0.5) * 3, (random() - 0.5) * 3, 0.0)),
-                mat4.fromScaling(vec3.fromValues(1.0, 1.0, 1.0)),
+                mat4.fromTranslation(position),
+                mat4.fromScaling([6.0, 6.0, 6.0]),
+                mat4.fromXRotation(Math.PI / 2),
               )),
-              "tree", ref({
-                seed: random(),
+              "simpleModel", ref({
+                mesh: () => ContentsManager.mesh.sprite,
+                texture: () => new GlobalCacheAsyncTexture("/sprites/cloud_1.png"),
+                ambient: 1,
               }),
-              "wall", ref({
-                mask: { x1: -0.5, y1: -0.5, x2: 0.5, y2: 0.5 }
+              "simpleMovement", ref({
+                move: (position: vec3, time: Time) => {
+                  return vec3.add(position, [position[0] < -160 ? 320 : -time.delta * 0.02 / position[2], 0.0, 0.0])
+                }
               })
             )
-          }
+          })()
         }
 
         let stopWebSocket = false

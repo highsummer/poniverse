@@ -17,7 +17,7 @@ export const TreeDraw: KeyedSystem<{ transform: RefCell<mat4>, tree: RefCell<Tre
       draw.pushMatrix()
       draw.addMatrix(transform.value)
       draw.addMatrix(mat4.fromZRotation(random() * Math.PI * 2))
-      draw.setAmbient(0.5)
+      draw.setAmbient(0.75)
       draw.setTexture(ContentsManager.texture.bark)
       draw.draw(ContentsManager.mesh.stem)
       draw.popMatrix()
