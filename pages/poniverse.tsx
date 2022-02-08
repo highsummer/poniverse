@@ -6,7 +6,7 @@ import {
   disposeContents,
   GlobalCacheAsyncMesh,
   GlobalCacheAsyncTexture,
-  initContents
+  initContents, Mesh
 } from "../core/contents";
 import OtIntroduction from "../components/OtIntroduction";
 import seedrandom from "seedrandom"
@@ -302,23 +302,32 @@ const Poniverse: NextPage = () => {
           }
         }
 
-        for (let j = -8; j <= 8; j++) {
+        for (let j = -16; j <= 16; j++) {
           for (let i = 0; i <= 5; i++) {
             placeGrass(j, i)
           }
         }
 
-        for (let j = -8; j <= 8; j++) {
+        for (let j = -16; j <= 16; j++) {
           placeBrick(j, -1, j === 0 ? "t" : "tb")
         }
 
         for (let i = -6; i <= -2; i++) {
           placeBrick(0, i, "lr")
-          for (let j = -8; j < 0; j++) {
+          for (let j = -16; j < 0; j++) {
             placeGrass(j, i)
             placeGrass(-j, i)
           }
         }
+
+        ecs.create(
+          "transform", ref(mat4.mulAll(mat4.fromTranslation([0, 34, 0]), mat4.fromScaling([1, 1, 1]))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/mountain.obj"),
+            texture: () => ContentsManager.texture.grassPattern,
+          }),
+          "wall", ref({ mask: { x1: -1, y1: -0.3, x2: 1, y2: 0.3 } })
+        )
 
         for (let i = -2; i < 0; i++) {
           for (let j = -3; j < 4; j++) {
