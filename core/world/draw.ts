@@ -316,11 +316,11 @@ export class DrawContext implements Disposable {
 
     if (mode === "immersive") {
       const viewPosition = vec3.transformMat4(this.getWrapPosition(position), this.viewMatrix)
-      container.style.transform = `translate3d(${(viewPosition[0] / viewPosition[2]) * 50 + 50}vw, ${(-viewPosition[1] / viewPosition[2]) * 50 + 50}vh, 0) translate3d(-50%, -50%, 0) scale3d(${scaleByScreen}, ${scaleByScreen}, 1)`
+      container.style.transform = `translate(${(viewPosition[0] / viewPosition[2]) * 50 + 50}vw, ${(-viewPosition[1] / viewPosition[2]) * 50 + 50}vh) translate(-50%, -50%) scale(${scaleByScreen})`
       container.style.zIndex = `${Math.floor(-viewPosition[2] * 1000 + 20000)}`
     } else if (mode === "orthographic") {
       const aspect = window.innerWidth / window.innerHeight
-      container.style.transform = `translate3d(${position[0] / aspect * 50 + 50}vw, ${-position[1] * 50 + 50}vh, 0) translate3d(-50%, -50%, 0) scale3d(${scaleByScreen}, ${scaleByScreen}, 1)`
+      container.style.transform = `translate(${position[0] / aspect * 50 + 50}vw, ${-position[1] * 50 + 50}vh) translate(-50%, -50%) scale(${scaleByScreen})`
       container.style.zIndex = `${Math.floor(-position[2] * 1000 + 20000)}`
     }
     container.className = "absolute left-0 top-0 text-white "

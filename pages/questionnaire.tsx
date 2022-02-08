@@ -192,7 +192,7 @@ const QuestionPane: React.FunctionComponent<{ question: Question, addScore: (sco
               }}
               style={{
                 backgroundImage: `url(${balloonSrc[i]})`,
-                transform: selected === i ? "scale3d(1.07, 1.07, 1.07)" : selected !== null ? "scale3d(0.95, 0.95, 0.95)" : undefined,
+                transform: selected === i ? "scale(1.07)" : selected !== null ? "scale(0.95)" : undefined,
                 filter: selected !== null && selected !== i ? "brightness(80%)" : undefined,
               }}
               disabled={selected !== null}
