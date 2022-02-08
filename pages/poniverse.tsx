@@ -1,6 +1,6 @@
 import React from "react"
 import type { NextPage } from "next"
-import {mat4, vec3} from "../core/declarativeLinalg";
+import {mat4, vec2, vec3} from "../core/declarativeLinalg";
 import {
   ContentsManager,
   disposeContents,
@@ -23,7 +23,7 @@ import {
 } from "../core/components/simple";
 import {Usable, UsableDraw, UsableUse} from "../core/components/usable";
 import {Tree, TreeDraw} from "../core/components/decoration";
-import {Test, TestDraw, Wall} from "../core/components";
+import {Rect, Test, TestDraw, Wall} from "../core/components";
 import {World} from "../core/world/world";
 import {emptyEcs, SparseStorage} from "../core/world/ecs";
 import {ref, RefCell, Time} from "../core/world";
@@ -233,7 +233,25 @@ const Poniverse: NextPage = () => {
         const random = seedrandom("")
 
         const unitTile = 4
+        const worldRange: Rect = { x1: unitTile * -16, y1: unitTile * -6, x2: unitTile * 16, y2: unitTile * 4 }
         const offset = [0, 0]
+
+        ecs.create(
+          "transform", ref(mat4.create()),
+          "wall", ref({ mask: { x1: worldRange.x1 - 1, y1: worldRange.y1, x2: worldRange.x1, y2: worldRange.y2 } })
+        )
+        ecs.create(
+          "transform", ref(mat4.create()),
+          "wall", ref({ mask: { x1: worldRange.x2, y1: worldRange.y1, x2: worldRange.x2 + 1, y2: worldRange.y2 } })
+        )
+        ecs.create(
+          "transform", ref(mat4.create()),
+          "wall", ref({ mask: { x1: worldRange.x1, y1: worldRange.y1 - 1, x2: worldRange.x2, y2: worldRange.y1 } })
+        )
+        ecs.create(
+          "transform", ref(mat4.create()),
+          "wall", ref({ mask: { x1: worldRange.x1, y1: worldRange.y2, x2: worldRange.x2, y2: worldRange.y2 + 1 } })
+        )
 
         const placeGrass = (x: number, y: number) => {
           ecs.create(
