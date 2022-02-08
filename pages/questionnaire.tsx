@@ -170,9 +170,9 @@ Questions.forEach(question => {
 const QuestionPane: React.FunctionComponent<{ question: Question, addScore: (score: Score) => void }> = props => {
   const [selected, setSelected] = React.useState<number | null>(null)
   const balloonSrc = React.useMemo(() => {
-    return props.question.choices.map(c => `/sprites/text_balloon_${Math.floor(Math.random() * 3) + 1}.svg`)
+    return props.question.choices.map(c => `/assets/text_balloon_${Math.floor(Math.random() * 3) + 1}.svg`)
   }, [])
-  const dashedLineSrc = React.useMemo(() => `/sprites/dashed_line_${Math.floor(Math.random() * 3) + 1}.svg`, [])
+  const dashedLineSrc = React.useMemo(() => `/assets/dashed_line_${Math.floor(Math.random() * 3) + 1}.svg`, [])
 
   return (
     <div className={"w-48 flex flex-col items-center"}>
@@ -192,7 +192,7 @@ const QuestionPane: React.FunctionComponent<{ question: Question, addScore: (sco
               }}
               style={{
                 backgroundImage: `url(${balloonSrc[i]})`,
-                transform: selected === i ? "scale(107%)" : selected !== null ? "scale(95%)" : undefined,
+                transform: selected === i ? "scale3d(1.07, 1.07, 1.07)" : selected !== null ? "scale3d(0.95, 0.95, 0.95)" : undefined,
                 filter: selected !== null && selected !== i ? "brightness(80%)" : undefined,
               }}
               disabled={selected !== null}

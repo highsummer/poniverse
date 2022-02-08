@@ -419,8 +419,10 @@ const Poniverse: NextPage = () => {
 
   return (
     <div className={"overflow-hidden relative w-screen h-screen"}>
-      <canvas ref={canvasRef} />
-      <div id={"labelPane"} className={"absolute overflow-hidden w-screen h-screen left-0 top-0"} />
+      <canvas className={"absolute left-0 top-0"} ref={canvasRef} />
+      <div className={"absolute overflow-hidden w-full h-full left-0 top-0"}>
+        <div id={"labelPane"} className={"relative w-full h-full"} />
+      </div>
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         {modalContents}
       </Modal>

@@ -215,7 +215,7 @@ const Result: NextPage = () => {
             <div className={"w-0 overflow-visible"}>
               <a href={"/poniverse"}>
                 <img
-                  src={"/sprites/toniverse.png"}
+                  src={"/assets/poniverse.png"}
                   style={{
                     minWidth: "60rem",
                     transform: "translate(-50%, 0)",
