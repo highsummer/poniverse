@@ -35,6 +35,11 @@ import {
   EmotionButtonDraw,
   EmotionButtonInteract
 } from "../core/components/button";
+import ToBeClassFlags from "../components/ToBeClassFlags";
+import ToBe78Stairs from "../components/ToBe78Stairs";
+import ToBeProjectIceBreaking from "../components/ToBeProjectIceBreaking";
+import ToBeProjectTheme from "../components/ToBeProjectTheme";
+import ToBeProjectMissionTour from "../components/ToBeProjectMissionTour";
 
 interface OuterState {
   width: number
@@ -207,6 +212,101 @@ const Poniverse: NextPage = () => {
             texture: () => ContentsManager.texture.board,
           }),
           "wall", ref({ mask: { x1: -1, y1: -0.3, x2: 1, y2: 0.3 } })
+        )
+
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(-24.0, -12.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+          }),
+          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "usable", ref({
+            label: "📖 2월 11일: 분반 깃발과 선배들의 한마디",
+            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            hover: false,
+          }),
+          "simpleModal", ref({
+            contents: () => <div>
+              <ToBeClassFlags />
+            </div>,
+          }),
+        )
+
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(32.0, 7.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+          }),
+          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "usable", ref({
+            label: "📖 2월 10일: 새터 78계단 공고",
+            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            hover: false,
+          }),
+          "simpleModal", ref({
+            contents: () => <div>
+              <ToBe78Stairs />
+            </div>,
+          }),
+        )
+
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(12.0, -12.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+          }),
+          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "usable", ref({
+            label: "📖 2월 12일: 아이스 브레이킹",
+            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            hover: false,
+          }),
+          "simpleModal", ref({
+            contents: () => <div>
+              <ToBeProjectIceBreaking />
+            </div>,
+          }),
+        )
+
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(24.0, -15.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+          }),
+          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "usable", ref({
+            label: "📖 2월 12일: 테마기획",
+            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            hover: false,
+          }),
+          "simpleModal", ref({
+            contents: () => <div>
+              <ToBeProjectTheme />
+            </div>,
+          }),
+        )
+
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(36.0, -12.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+          }),
+          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "usable", ref({
+            label: "📖 2월 12일: 미션투어",
+            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            hover: false,
+          }),
+          "simpleModal", ref({
+            contents: () => <div>
+              <ToBeProjectMissionTour />
+            </div>,
+          }),
         )
 
         for (const [i, text] of [
