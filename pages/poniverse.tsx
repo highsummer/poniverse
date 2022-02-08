@@ -14,7 +14,13 @@ import getConfig from "next/config";
 import {useRouter} from "next/router";
 import {useGlobalContext} from "./_app";
 import {Player, PlayerDraw, PlayerMove, PlayerRemoteMove, PlayerTargetMove} from "../core/components/player";
-import {LaunchSimpleModal, SimpleModal, SimpleModel, SimpleModelDraw} from "../core/components/simple";
+import {
+  LaunchSimpleModal,
+  SimpleModal,
+  SimpleModel,
+  SimpleModelDraw, SimpleMultiModel,
+  SimpleMultiModelDraw
+} from "../core/components/simple";
 import {Usable, UsableDraw, UsableUse} from "../core/components/usable";
 import {Tree, TreeDraw} from "../core/components/decoration";
 import {Test, TestDraw, Wall} from "../core/components";
@@ -127,6 +133,7 @@ const Poniverse: NextPage = () => {
           .attach("tree", new SparseStorage<RefCell<Tree>>())
           .attach("button", new SparseStorage<RefCell<Button>>())
           .attach("emotionButton", new SparseStorage<RefCell<EmotionButton>>())
+          .attach("simpleMultiModel", new SparseStorage<RefCell<SimpleMultiModel>>())
           .register("update", PlayerMove)
           .register("update", PlayerTargetMove)
           .register("update", PlayerRemoteMove)
@@ -140,6 +147,7 @@ const Poniverse: NextPage = () => {
           .register("update", ButtonInteract)
           .register("update", EmotionButtonInteract)
           .register("draw", EmotionButtonDraw)
+          .register("draw", SimpleMultiModelDraw)
 
         const keyState = new KeyState(document)
 
@@ -258,7 +266,7 @@ const Poniverse: NextPage = () => {
           }
         }
 
-        const placeBrick = (x: number, y: number) => {
+        const placeBrick = (x: number, y: number, close: string) => {
           const texture = `/textures/brick_${Math.floor(random() * 3) + 1}.png`
           ecs.create(
             "transform", ref(mat4.mulAll(
@@ -270,6 +278,28 @@ const Poniverse: NextPage = () => {
               texture: () => new GlobalCacheAsyncTexture(texture),
             })
           )
+
+          for (const [tag, transform] of [
+            ["l", mat4.mulAll(mat4.fromTranslation([-1.025, 0, 0]), mat4.fromZRotation(0))],
+            ["r", mat4.mulAll(mat4.fromTranslation([1.025, 0, 0]), mat4.fromZRotation(0))],
+            ["t", mat4.mulAll(mat4.fromTranslation([0, 1.025, 0]), mat4.fromZRotation(Math.PI / 2))],
+            ["b", mat4.mulAll(mat4.fromTranslation([0, -1.025, 0]), mat4.fromZRotation(Math.PI / 2))],
+          ] as [string, mat4][]) {
+            if (close.includes(tag)) {
+              ecs.create(
+                "transform", ref(mat4.mulAll(
+                  mat4.fromTranslation([(x - offset[0]) * unitTile, (y - offset[1]) * unitTile, 0.0]),
+                  mat4.fromScaling([unitTile / 2, unitTile / 2, unitTile / 2]),
+                  transform,
+                  mat4.fromScaling([0.05, 1, 0.05]),
+                )),
+                "simpleModel", ref({
+                  mesh: () => ContentsManager.mesh.tessellatedCube,
+                  texture: () => new GlobalCacheAsyncTexture("/textures/brick_side.png"),
+                })
+              )
+            }
+          }
         }
 
         for (let j = -8; j <= 8; j++) {
@@ -279,11 +309,11 @@ const Poniverse: NextPage = () => {
         }
 
         for (let j = -8; j <= 8; j++) {
-          placeBrick(j, -1)
+          placeBrick(j, -1, j === 0 ? "t" : "tb")
         }
 
         for (let i = -6; i <= -2; i++) {
-          placeBrick(0, i)
+          placeBrick(0, i, "lr")
           for (let j = -8; j < 0; j++) {
             placeGrass(j, i)
             placeGrass(-j, i)

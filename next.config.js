@@ -13,6 +13,10 @@ const nextConfig = {
         type: "asset/source",
       },
       {
+        test: /\.txt$/,
+        type: "asset/source",
+      },
+      {
         test: /\.svg$/,
         type: "asset/inline",
       }

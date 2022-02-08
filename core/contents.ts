@@ -89,7 +89,7 @@ export class GlobalCacheAsyncMesh implements Mesh {
   }
 
   onDelete() {
-    this.innerMesh?.onDelete()
+    // this.innerMesh?.onDelete()
   }
 
   draw() {
@@ -251,7 +251,7 @@ export class GlobalCacheAsyncTexture implements Texture {
   }
 
   onDelete() {
-    this.innerTexture?.onDelete()
+    // this.innerTexture?.onDelete()
   }
 
   getTexture() {
@@ -289,7 +289,7 @@ export class DataTexture implements Disposable, Texture {
 
 export class Contents implements Disposable {
   mesh: Record<
-    "test" | "sprite" | "spriteMirror" | "tessellatedPlane" | "slogan" | "logo" | "sphere" |
+    "test" | "tessellatedCube" | "sprite" | "spriteMirror" | "tessellatedPlane" | "slogan" | "logo" | "sphere" |
     "toStatue" | "stem" | "studentCommunityHall" | "board",
     Mesh>
   texture: Record<
@@ -312,6 +312,7 @@ export class Contents implements Disposable {
         .vertex([-1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .vertex([1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .build(),
+      tessellatedCube: new AsyncMesh(gl, shader, "/models/tessellated_cube.obj"),
       sprite: new MeshBuilder(gl, shader)
         .vertex([-1, 1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 0])
         .vertex([-1, -1, 0], [0, 0, 1], [1, 1, 1, 1], [0, 1])
