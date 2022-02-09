@@ -321,7 +321,7 @@ const Poniverse: NextPage = () => {
         )
 
         for (const [i, text] of [
-          "❤️", "🎉", "✅", "😭",
+          "❤️", "🎉", "👋", "😭",
           "🔥", "👀", "⬅️", "➡️",
         ].map((e, i) => [i, e] as [number, string])) {
           const x = ((i >= 4 ? i - 4 : i) - 1.5) / 3 * 0.6
