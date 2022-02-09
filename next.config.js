@@ -28,8 +28,8 @@ const nextConfig = {
   trailingSlash: true,
 
   publicRuntimeConfig: {
-    URL_REST: "374ffq4rze.execute-api.ap-northeast-2.amazonaws.com/dev",
-    URL_WEBSOCKET: "a3ek0tva1l.execute-api.ap-northeast-2.amazonaws.com/dev",
+    URL_REST: "rest-poniverse.yoonha.dev",
+    URL_WEBSOCKET: "websocket-poniverse.yoonha.dev",
   },
 }
 
