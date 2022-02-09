@@ -40,7 +40,7 @@ export class World<K extends string, S extends { [P in K]: S[P] }> implements Di
   }
 
   initWebsocket(ws: WebSocket) {
-    const playerChunkSize = 10
+    const playerChunkSize = 20
 
     let nextChunkUpdate = new Date()
     function updateLocation(player: Player, area: string, position: [number, number]) {
