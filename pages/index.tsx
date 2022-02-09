@@ -27,7 +27,7 @@ const Index: NextPage = () => {
     if (response.status === 200) {
       const responseBody = await response.json()
       globalCtx.setAuth(responseBody.token, data.username)
-      return router.push("/poniverse")
+      return router.push("/poniverse/")
     } else {
       const responseBody = await response.json()
       setError(responseBody.message)
@@ -37,7 +37,7 @@ const Index: NextPage = () => {
 
   React.useEffect(() => {
     if (globalCtx.user !== null) {
-      router.push("/poniverse").then()
+      router.push("/poniverse/").then()
     }
   }, [globalCtx.user])
 

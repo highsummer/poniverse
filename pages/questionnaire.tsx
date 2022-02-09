@@ -268,7 +268,7 @@ const Questionnaire: NextPage = () => {
         const type = SignatureToResult[signature]
 
         await globalCtx.call("/update-user", { username: globalCtx.authUser, type: type })
-        await router.push({ pathname: "/result", query: { type: type } })
+        await router.push({ pathname: "/result/", query: { type: type } })
       }, 4000)
     }
   }, [progress])

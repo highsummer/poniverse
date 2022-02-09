@@ -576,7 +576,7 @@ const Poniverse: NextPage = () => {
           })
         )
       } else {
-        router.push("/questionnaire").then()
+        router.push("/questionnaire/").then()
       }
     }
   }, [globalCtx.user, world])
