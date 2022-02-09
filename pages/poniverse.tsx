@@ -560,7 +560,7 @@ const Poniverse: NextPage = () => {
             moveAnimation: 0,
             type: globalCtx.user.type,
             username: globalCtx.authUser,
-            name: globalCtx.user.classId === "새준위" ?
+            name: globalCtx.user.classId === "새준위" || globalCtx.user.classId === "무은재행정팀" ?
               `새준위 ${globalCtx.user.fullName}` :
               globalCtx.user.classId.startsWith("인솔자 ") ?
               `${globalCtx.user.classId.split(" ")[1]}분반 인솔자 ${globalCtx.user.fullName}`:
