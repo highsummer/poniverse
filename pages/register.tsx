@@ -71,7 +71,7 @@ const Register: NextPage = () => {
       if (data.classId.length === 0) {
         form.setError("classId", { message: "분반을 입력하세요." })
         isError = true
-      } else if (/^[0-9]+|새준위|인솔자$/.exec(data.studentId) === null) {
+      } else if (/^[0-9]+|새준위|인솔자 \d+|무은재행정팀$/.exec(data.studentId) === null) {
         form.setError("classId", { message: "잘못된 분반 형식입니다." })
         isError = true
       }
