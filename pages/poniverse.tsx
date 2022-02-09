@@ -474,7 +474,6 @@ const Poniverse: NextPage = () => {
             mesh: () => new GlobalCacheAsyncMesh("/models/mountain.obj"),
             texture: () => ContentsManager.texture.grassPattern,
           }),
-          "wall", ref({ mask: { x1: -1, y1: -0.3, x2: 1, y2: 0.3 } })
         )
 
         for (let i = -2; i < 0; i++) {
