@@ -451,6 +451,23 @@ const Poniverse: NextPage = () => {
           }
         }
 
+        for (let j = -8; j <= 8; j++) {
+          for (let i = 0; i <= 2; i++) {
+            const scale = 16.5 / 8.5
+            ecs.create(
+              "transform", ref(mat4.mulAll(
+                mat4.fromTranslation(vec3.fromValues((j - offset[0]) * unitTile * scale, (-6.5 - offset[1]) * unitTile, -unitTile * scale * (i + 0.5))),
+                mat4.fromScaling([unitTile / 2 * scale, unitTile / 2 * scale, unitTile / 2 * scale]),
+                mat4.fromXRotation(Math.PI / 2)
+              )),
+              "simpleModel", ref({
+                mesh: () => ContentsManager.mesh.tessellatedPlane,
+                texture: () => new GlobalCacheAsyncTexture("/textures/dirt.png"),
+              })
+            )
+          }
+        }
+
         ecs.create(
           "transform", ref(mat4.mulAll(mat4.fromTranslation([0, 34, 0]), mat4.fromScaling([1, 1, 1]))),
           "simpleModel", ref({
