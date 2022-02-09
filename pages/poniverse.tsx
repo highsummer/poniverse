@@ -40,6 +40,7 @@ import ToBe78Stairs from "../components/ToBe78Stairs";
 import ToBeProjectIceBreaking from "../components/ToBeProjectIceBreaking";
 import ToBeProjectTheme from "../components/ToBeProjectTheme";
 import ToBeProjectMissionTour from "../components/ToBeProjectMissionTour";
+import AboutPoniverse from "../components/AboutPoniverse";
 
 interface OuterState {
   width: number
@@ -206,12 +207,22 @@ const Poniverse: NextPage = () => {
         )
 
         ecs.create(
-          "transform", ref(mat4.fromTranslation(vec3.fromValues(-15.0, 0.0, 0.0))),
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(-12.0, 0.0, 0.0))),
           "simpleModel", ref({
             mesh: () => ContentsManager.mesh.board,
             texture: () => ContentsManager.texture.board,
           }),
-          "wall", ref({ mask: { x1: -1, y1: -0.3, x2: 1, y2: 0.3 } })
+          "wall", ref({ mask: { x1: -1, y1: -0.3, x2: 1, y2: 0.3 } }),
+          "usable", ref({
+            label: "📖 포니버스에 대해",
+            range:  { x1: -2, y1: -1, x2: 2, y2: 1 },
+            hover: false,
+          }),
+          "simpleModal", ref({
+            contents: () => <div>
+              <AboutPoniverse />
+            </div>,
+          }),
         )
 
         ecs.create(
