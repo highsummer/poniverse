@@ -102,10 +102,10 @@ const Index: NextPage = () => {
               아직 가입하지 않으셨나요?&nbsp;
               <a className={"text-slate-700 font-bold"} href={"/register"}>학번으로 가입하기</a>
             </small>
-            <small className={"text-slate-500"}>
-              비밀번호를 잊으셨나요?&nbsp;
-              <a className={"text-slate-700 font-bold"} href={"/reset-password"}>비밀번호 초기화</a>
-            </small>
+            {/*<small className={"text-slate-500"}>*/}
+            {/*  비밀번호를 잊으셨나요?&nbsp;*/}
+            {/*  <a className={"text-slate-700 font-bold"} href={"/reset-password"}>비밀번호 초기화</a>*/}
+            {/*</small>*/}
           </div>
         </div>
       </form>
