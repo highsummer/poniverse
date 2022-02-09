@@ -3,6 +3,7 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import getConfig from "next/config";
 import {useRouter} from "next/router";
+import DefaultHeader from "../components/DefaultHeader";
 
 export interface GlobalContext {
   authToken: string | null
@@ -191,9 +192,11 @@ function App({ Component, pageProps }: AppProps) {
     return () => document.removeEventListener("keypress", onSpacePress)
   }, [])
 
-  return <GlobalContext.Provider value={state}>
-    <Component {...pageProps} />
-  </GlobalContext.Provider>
+  return <DefaultHeader>
+    <GlobalContext.Provider value={state}>
+      <Component {...pageProps} />
+    </GlobalContext.Provider>
+  </DefaultHeader>
 }
 
 export default App
