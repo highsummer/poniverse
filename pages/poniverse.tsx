@@ -562,6 +562,8 @@ const Poniverse: NextPage = () => {
             username: globalCtx.authUser,
             name: globalCtx.user.classId === "새준위" ?
               `새준위 ${globalCtx.user.fullName}` :
+              globalCtx.user.classId.startsWith("인솔자 ") ?
+              `${globalCtx.user.classId.split(" ")[1]}분반 인솔자 ${globalCtx.user.fullName}`:
               `${globalCtx.user.classId}분반 ${globalCtx.user.fullName}`,
             lastLocationUpdated: new Date(),
             control: true,
