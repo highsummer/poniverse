@@ -290,7 +290,7 @@ export class DataTexture implements Disposable, Texture {
 export class Contents implements Disposable {
   mesh: Record<
     "test" | "tessellatedCube" | "sprite" | "spriteMirror" | "tessellatedPlane" | "slogan" | "logo" | "sphere" |
-    "toStatue" | "stem" | "studentCommunityHall" | "board",
+    "toStatue" | "stem" | "studentCommunityHall" | "board" | "tessellatedFlag",
     Mesh>
   texture: Record<
     "ponix[analyst]" | "ponixJump[analyst]" | "ponix[athletic]" | "ponixJump[athletic]" |
@@ -336,12 +336,30 @@ export class Contents implements Disposable {
           for (let j = -1; j < 1; j += delta) {
             const ni = i + delta
             const nj = j + delta
-            builder.vertex([j, i, 0], [0, 0, 1], [1, 1, 1, 1], [(1 + j) / 2, (1 + i) / 2])
-            builder.vertex([nj, i, 0], [0, 0, 1], [1, 1, 1, 1], [(1 + nj) / 2, (1 + i) / 2])
-            builder.vertex([j, ni, 0], [0, 0, 1], [1, 1, 1, 1], [(1 + j) / 2, (1 + ni) / 2])
-            builder.vertex([j, ni, 0], [0, 0, 1], [1, 1, 1, 1], [(1 + j) / 2, (1 + ni) / 2])
-            builder.vertex([nj, i, 0], [0, 0, 1], [1, 1, 1, 1], [(1 + nj) / 2, (1 + i) / 2])
-            builder.vertex([nj, ni, 0], [0, 0, 1], [1, 1, 1, 1], [(1 + nj) / 2, (1 + ni) / 2])
+            builder.vertex([j, i, 0], [0, 0, 1], [1, 1, 1, 1], [1 - (1 + j) / 2, (1 + i) / 2])
+            builder.vertex([nj, i, 0], [0, 0, 1], [1, 1, 1, 1], [1 - (1 + nj) / 2, (1 + i) / 2])
+            builder.vertex([j, ni, 0], [0, 0, 1], [1, 1, 1, 1], [1 - (1 + j) / 2, (1 + ni) / 2])
+            builder.vertex([j, ni, 0], [0, 0, 1], [1, 1, 1, 1], [1 - (1 + j) / 2, (1 + ni) / 2])
+            builder.vertex([nj, i, 0], [0, 0, 1], [1, 1, 1, 1], [1 - (1 + nj) / 2, (1 + i) / 2])
+            builder.vertex([nj, ni, 0], [0, 0, 1], [1, 1, 1, 1], [1 - (1 + nj) / 2, (1 + ni) / 2])
+          }
+        }
+
+        return builder.build()
+      })(),
+      tessellatedFlag: (() => {
+        const delta = 0.5
+        const builder = new MeshBuilder(gl, shader)
+        for (let i = -1; i < 1; i += delta) {
+          for (let j = -2; j < 0; j += delta) {
+            const ni = i + delta
+            const nj = j + delta
+            builder.vertex([j, i, 0], [0, 0, 1], [1, 1, 1, 1], [-j / 2, (1 + i) / 2])
+            builder.vertex([nj, i, 0], [0, 0, 1], [1, 1, 1, 1], [-nj / 2, (1 + i) / 2])
+            builder.vertex([j, ni, 0], [0, 0, 1], [1, 1, 1, 1], [-j / 2, (1 + ni) / 2])
+            builder.vertex([j, ni, 0], [0, 0, 1], [1, 1, 1, 1], [-j / 2, (1 + ni) / 2])
+            builder.vertex([nj, i, 0], [0, 0, 1], [1, 1, 1, 1], [-nj / 2, (1 + i) / 2])
+            builder.vertex([nj, ni, 0], [0, 0, 1], [1, 1, 1, 1], [-nj / 2, (1 + ni) / 2])
           }
         }
 

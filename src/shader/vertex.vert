@@ -7,6 +7,10 @@ uniform mat4 worldMatrix;
 uniform vec3 warpSingularity;
 uniform vec4 warpPlane;
 uniform float warpRadius;
+uniform float waveDeformMagnitude;
+uniform float waveDeformEvolution;
+uniform float waveDeformRandomSeed;
+uniform float waveDeformScale;
 in vec3 a_position;
 in vec3 a_normal;
 in vec4 a_color;
@@ -47,7 +51,10 @@ vec4 warp(vec4 worldPosition) {
 }
 
 void main() {
-    vec4 worldPosition = worldMatrix * vec4(a_position, 1.0);
+    vec4 preWavedGlobalPosition = worldMatrix * vec4(a_position, 1.0);
+    vec3 wavedPosition = a_position + vec3(0.0, 0.0, sin(waveDeformEvolution + a_position.x * waveDeformScale + preWavedGlobalPosition.x)) * a_position.x * waveDeformMagnitude;
+
+    vec4 worldPosition = worldMatrix * vec4(wavedPosition, 1.0);
     vec4 warpPosition = warp(worldPosition);
     vec4 warpDeltaX = warp(worldPosition + vec4(epsilon, 0.0, 0.0, 0.0));
     vec4 warpDeltaY = warp(worldPosition + vec4(0.0, epsilon, 0.0, 0.0));

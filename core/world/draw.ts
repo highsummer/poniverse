@@ -1,7 +1,7 @@
 import {mat4, vec3, vec4} from "../declarativeLinalg";
 import {ContentsManager, Mesh, Texture} from "../contents";
 import {CSSProperties} from "react";
-import {Disposable} from "./index";
+import {Disposable, Time} from "./index";
 import {ShaderProgram} from "./shader";
 
 const shaderSourceDirectFetchVertex = require("../../src/shader/directFetch.vert")
@@ -229,6 +229,18 @@ export class DrawContext implements Disposable {
     )
   }
 
+  setWaveDeform(magnitude: number, scale: number) {
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.defaultShader.program, "waveDeformMagnitude"),
+      magnitude,
+    )
+
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.defaultShader.program, "waveDeformScale"),
+      scale,
+    )
+  }
+
   setHiderPivot(position: vec3) {
     const transformedPosition = vec3.transformMat4(position, mat4.mul(this.viewMatrix, this.matrix.slice(-1)[0]))
     this.gl.uniform1f(
@@ -237,10 +249,15 @@ export class DrawContext implements Disposable {
     )
   }
 
-  init() {
+  init(time: Time) {
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer.framebuffer)
 
     this.gl.useProgram(this.defaultShader.program)
+    this.gl.uniform1f(
+      this.gl.getUniformLocation(this.defaultShader.program, "waveDeformEvolution"),
+      time.total * 0.005,
+    )
+
     this.gl.viewport(0, 0, this.width, this.height)
 
     this.gl.clearColor(0.4, 0.6, 0.8, 1.0)

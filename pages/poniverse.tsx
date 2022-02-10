@@ -15,7 +15,7 @@ import {useRouter} from "next/router";
 import {useGlobalContext} from "./_app";
 import {Player, PlayerDraw, PlayerMove, PlayerRemoteMove, PlayerTargetMove} from "../core/components/player";
 import {
-  LaunchSimpleModal,
+  LaunchSimpleModal, SimpleFlag, SimpleFlagDraw,
   SimpleModal,
   SimpleModel,
   SimpleModelDraw, SimpleMovement, SimpleMovementMove, SimpleMultiModel,
@@ -42,6 +42,7 @@ import ToBeProjectTheme from "../components/ToBeProjectTheme";
 import ToBeProjectMissionTour from "../components/ToBeProjectMissionTour";
 import AboutPoniverse from "../components/AboutPoniverse";
 import Stairs from "../components/Stairs";
+import AboutClass from "../components/AboutClass";
 
 interface OuterState {
   width: number
@@ -146,6 +147,7 @@ const Poniverse: NextPage = () => {
           .attach("emotionButton", new SparseStorage<RefCell<EmotionButton>>())
           .attach("simpleMultiModel", new SparseStorage<RefCell<SimpleMultiModel>>())
           .attach("simpleMovement", new SparseStorage<RefCell<SimpleMovement>>())
+          .attach("simpleFlag", new SparseStorage<RefCell<SimpleFlag>>())
           .register("update", PlayerMove)
           .register("update", PlayerTargetMove)
           .register("update", PlayerRemoteMove)
@@ -161,6 +163,7 @@ const Poniverse: NextPage = () => {
           .register("draw", EmotionButtonDraw)
           .register("draw", SimpleMultiModelDraw)
           .register("update", SimpleMovementMove)
+          .register("draw", SimpleFlagDraw)
 
         const keyState = new KeyState(document)
 
@@ -231,25 +234,6 @@ const Poniverse: NextPage = () => {
         )
 
         ecs.create(
-          "transform", ref(mat4.fromTranslation(vec3.fromValues(-24.0, -12.0, 0.0))),
-          "simpleModel", ref({
-            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
-            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
-          }),
-          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
-          "usable", ref({
-            label: "📖 2월 11일: 분반 깃발과 선배들의 한마디",
-            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
-            hover: false,
-          }),
-          "simpleModal", ref({
-            contents: () => <div>
-              <ToBeClassFlags />
-            </div>,
-          }),
-        )
-
-        ecs.create(
           "transform", ref(mat4.mulAll(mat4.fromTranslation([32.0, 14.0, 0.0]), mat4.fromScaling([1.8, 1.8, 1.8]))),
           "simpleModel", ref({
             mesh: () => new GlobalCacheAsyncMesh("/models/stairs.obj"),
@@ -257,7 +241,7 @@ const Poniverse: NextPage = () => {
           }),
           "wall", ref({ mask: { x1: -7.2, y1: -1, x2: 7.2, y2: 10 } }),
           "usable", ref({
-            label: "📖 [new] 새터 78계단 공고",
+            label: "📖 새터 78계단 공고",
             range:  { x1: -8, y1: -2, x2: 8, y2: 2 },
             hover: false,
           }),
@@ -347,6 +331,67 @@ const Poniverse: NextPage = () => {
         }
 
         const random = seedrandom("")
+        const classFlags = ([
+          ["2", "v", random()],
+          ["4", "h", random()],
+          ["5", "h", random()],
+          ["6", "v", random()],
+          ["7", "h", random()],
+          ["8", "v", random()],
+          ["9", "h", random()],
+          ["10", "h", random()],
+          ["11", "v", random()],
+          ["12", "v", random()],
+          ["13", "v", random()],
+          ["14", "h", random()],
+          ["15", "h", random()],
+          // ["1", [0, 0, 0], "h"],
+          // ["3", [0, 0, 0], "h"],
+        ] as [string, string, number][])
+          .sort((a, b) => a[2] - b[2])
+          .map(([classId, orientation], i) => [i, classId, orientation] as [number, string, string])
+
+        for (const [index, classId, orientation] of classFlags) {
+          const position: vec3 = [-index * 4 - 6, -random() * 8 - 8, 0]
+          const length = random() + 7
+
+          ecs.create(
+            "transform", ref(mat4.mulAll(
+              mat4.fromTranslation(position),
+              mat4.fromTranslation([0, 0, length - (orientation === "h" ? 1.2 : 1.8)]),
+              mat4.fromXRotation(Math.PI / 2),
+              mat4.fromZRotation(Math.PI),
+              mat4.fromScaling(orientation === "h" ? [1.8, 1.2, 1.0] : [1.2, 1.8, 1.0]),
+            )),
+            "simpleFlag", ref({
+              mesh: () => ContentsManager.mesh.tessellatedFlag,
+              texture: () => new GlobalCacheAsyncTexture(`/textures/flag_class_${classId}.png`)
+            })
+          )
+
+          ecs.create(
+            "transform", ref(mat4.mulAll(
+              mat4.fromTranslation(position),
+              mat4.fromTranslation([-0.05, 0, length / 2]),
+              mat4.fromScaling([0.05, 0.05, length / 2]),
+            )),
+            "simpleModel", ref({
+              mesh: () => ContentsManager.mesh.tessellatedCube,
+              texture: () => new GlobalCacheAsyncTexture(`/textures/marble.png`)
+            }),
+            "wall", ref({ mask: { x1: -0.5, y1: -0.5, x2: 0.5, y2: 0.5 } }),
+            "usable", ref({
+              label: `📖 [new] ${classId}분반이 전하는 한마디`,
+              range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+              hover: false,
+            }),
+            "simpleModal", ref({
+              contents: () => <div>
+                <AboutClass classId={classId} />
+              </div>,
+            }),
+          )
+        }
 
         const unitTile = 4
         const worldRange: Rect = { x1: unitTile * -16, y1: unitTile * -6, x2: unitTile * 16, y2: unitTile * 4 }

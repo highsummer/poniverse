@@ -109,7 +109,7 @@ export class World<K extends string, S extends { [P in K]: S[P] }> implements Di
   }
 
   draw(time: Time) {
-    this.drawContext.init()
+    this.drawContext.init(time)
     this.ecs.update("draw", this, time)
     this.drawContext.flush()
     this.drawContext.postProcess()

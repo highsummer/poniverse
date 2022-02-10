@@ -24,6 +24,27 @@ export const SimpleModelDraw: KeyedSystem<{ transform: RefCell<mat4>, simpleMode
     })
 }
 
+export interface SimpleFlag {
+  texture: () => Texture
+  mesh: () => Mesh
+  ambient?: number
+}
+
+export const SimpleFlagDraw: KeyedSystem<{ transform: RefCell<mat4>, simpleFlag: RefCell<SimpleFlag> }> = (world, time) => {
+  const draw = world.drawContext
+  world.ecs.join("transform", "simpleFlag")
+    .forEach(([key, transform, simpleFlag]) => {
+      draw.pushMatrix()
+      draw.addMatrix(transform.value)
+      draw.setAmbient(simpleFlag.value.ambient ?? 0.75)
+      draw.setTexture(simpleFlag.value.texture())
+      draw.setWaveDeform(0.25, 3.0)
+      world.drawContext.draw(simpleFlag.value.mesh())
+      draw.setWaveDeform(0.0, 1.0)
+      draw.popMatrix()
+    })
+}
+
 export interface SimpleMultiModel {
   transforms: mat4[]
   textures: () => Texture[]
