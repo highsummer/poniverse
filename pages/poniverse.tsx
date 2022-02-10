@@ -41,6 +41,7 @@ import ToBeProjectIceBreaking from "../components/ToBeProjectIceBreaking";
 import ToBeProjectTheme from "../components/ToBeProjectTheme";
 import ToBeProjectMissionTour from "../components/ToBeProjectMissionTour";
 import AboutPoniverse from "../components/AboutPoniverse";
+import Stairs from "../components/Stairs";
 
 interface OuterState {
   width: number
@@ -66,7 +67,7 @@ const Modal: React.FunctionComponent<{ show: boolean, onHide?: () => void }> = p
 
   return (
     <div
-      className={"modal fixed flex flex-col justify-center items-center w-screen h-screen bg-slate-900/75 left-0 top-0 px-6 transition-opacity " + opacity + hider}
+      className={"modal py-16 overflow-y-scroll fixed w-screen h-screen bg-slate-900/75 left-0 top-0 px-6 transition-opacity " + opacity + hider}
       style={{ zIndex: "90000" }}
       onClick={e => {
         e.stopPropagation()
@@ -77,26 +78,28 @@ const Modal: React.FunctionComponent<{ show: boolean, onHide?: () => void }> = p
         props.onHide?.()
       }}
     >
-      <div
-        className={"max-w-screen-md w-full rounded-md bg-white shadow-2xl shadow-black mb-8 px-8 py-4"}
-        onClick={e => { e.stopPropagation() }}
-        onTouchEnd={e => { e.stopPropagation() }}
-      >
-        {props.children}
+      <div className={"w-full min-h-full flex flex-col justify-center items-center"}>
+        <div
+          className={"max-w-screen-md w-full rounded-md bg-white shadow-2xl shadow-black mb-8 px-8 py-4"}
+          onClick={e => { e.stopPropagation() }}
+          onTouchEnd={e => { e.stopPropagation() }}
+        >
+          {props.children}
+        </div>
+        <button
+          className={"text-white rounded outline outline-1 text-xl px-6 py-1 hover:bg-white/25 transition-all active:outline-4 click-on-space"}
+          onClick={e => {
+            e.stopPropagation()
+            props.onHide?.()
+          }}
+          onTouchEnd={e => {
+            e.stopPropagation()
+            props.onHide?.()
+          }}
+        >
+          확인
+        </button>
       </div>
-      <button
-        className={"text-white rounded outline outline-1 text-xl px-6 py-1 hover:bg-white/25 transition-all active:outline-4 click-on-space"}
-        onClick={e => {
-          e.stopPropagation()
-          props.onHide?.()
-        }}
-        onTouchEnd={e => {
-          e.stopPropagation()
-          props.onHide?.()
-        }}
-      >
-        확인
-      </button>
     </div>
   )
 }
@@ -110,6 +113,7 @@ const Poniverse: NextPage = () => {
   const [world, setWorld] = React.useState<World<any, any> | null>(null)
   const [showModal, setShowModal] = React.useState(false)
   const [modalContents, setModalContents] = React.useState<React.ReactNode>(undefined)
+  const [modalRefreshKey, setModalRefreshKey] = React.useState(new Date().getTime())
 
   React.useEffect(() => {
     outerStateRef.current.world = world
@@ -117,6 +121,7 @@ const Poniverse: NextPage = () => {
 
   React.useEffect(() => {
     if (showModal) {
+      setModalRefreshKey(new Date().getTime())
       world?.keyState.disable()
     } else  {
       world?.keyState.enable()
@@ -245,20 +250,20 @@ const Poniverse: NextPage = () => {
         )
 
         ecs.create(
-          "transform", ref(mat4.fromTranslation(vec3.fromValues(32.0, 7.0, 0.0))),
+          "transform", ref(mat4.mulAll(mat4.fromTranslation([32.0, 14.0, 0.0]), mat4.fromScaling([1.8, 1.8, 1.8]))),
           "simpleModel", ref({
-            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
-            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+            mesh: () => new GlobalCacheAsyncMesh("/models/stairs.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/stairs.png"),
           }),
-          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "wall", ref({ mask: { x1: -7.2, y1: -1, x2: 7.2, y2: 10 } }),
           "usable", ref({
-            label: "📖 2월 10일: 새터 78계단 공고",
-            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            label: "📖 [new] 새터 78계단 공고",
+            range:  { x1: -8, y1: -2, x2: 8, y2: 2 },
             hover: false,
           }),
           "simpleModal", ref({
             contents: () => <div>
-              <ToBe78Stairs />
+              <Stairs />
             </div>,
           }),
         )
@@ -478,7 +483,7 @@ const Poniverse: NextPage = () => {
 
         for (let i = -2; i < 0; i++) {
           for (let j = -16; j <= 16; j++) {
-            if (j >= -1 && j <= 1) {
+            if (j >= -1 && j <= 1 || Math.abs(j - 32 / unitTile) < 2) {
               continue
             }
             ecs.create(
@@ -617,7 +622,7 @@ const Poniverse: NextPage = () => {
       <div className={"absolute overflow-hidden w-full h-full left-0 top-0"}>
         <div id={"labelPane"} className={"relative w-full h-full"} />
       </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal key={modalRefreshKey} show={showModal} onHide={() => setShowModal(false)}>
         {modalContents}
       </Modal>
     </div>
