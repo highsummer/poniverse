@@ -345,8 +345,8 @@ const Poniverse: NextPage = () => {
           ["13", "v", random()],
           ["14", "h", random()],
           ["15", "h", random()],
-          // ["1", [0, 0, 0], "h"],
-          // ["3", [0, 0, 0], "h"],
+          ["1", "v", 1.2],
+          ["3", "h", 1.4],
         ] as [string, string, number][])
           .sort((a, b) => a[2] - b[2])
           .map(([classId, orientation], i) => [i, classId, orientation] as [number, string, string])
