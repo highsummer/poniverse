@@ -2,7 +2,7 @@ import React from "react"
 
 const ProjectIceBreaking: React.FunctionComponent = props => {
   return <div className={"text-justify"}>
-    <strong className={"text-xl"}>아이스브레이킹</strong><br/>
+    <strong className={"text-xl"}>아이스브레이킹: 응답하라 1986</strong><br/>
     <hr className={"mb-4"}/>
     <div className={"px-32 mb-4"}>
       <img src={"/assets/icebreaking.png"} />

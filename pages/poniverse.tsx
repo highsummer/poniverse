@@ -44,6 +44,7 @@ import AboutPoniverse from "../components/AboutPoniverse";
 import Stairs from "../components/Stairs";
 import AboutClass from "../components/AboutClass";
 import ProjectIceBreaking from "../components/ProjectIceBreaking";
+import ProjectTheme from "../components/ProjectTheme";
 
 interface OuterState {
   width: number
@@ -286,20 +287,44 @@ const Poniverse: NextPage = () => {
         ecs.create(
           "transform", ref(mat4.fromTranslation(vec3.fromValues(24.0, -15.0, 0.0))),
           "simpleModel", ref({
-            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
-            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+            mesh: () => new GlobalCacheAsyncMesh("/models/island_in_the_sky.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/island_in_the_sky.png"),
           }),
-          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "simpleMovement", ref({
+            move: (position: vec3, time: Time) => vec3.fromValues(position[0], position[1], Math.sin(time.total * 0.001 + 1) * 0.1 + 0.1 + 2)
+          })
+        )
+
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(24.0, -15.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/icebreaking_vase.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/marble.png"),
+          }),
+          "wall", ref({ mask: { x1: -2, y1: -2, x2: 2, y2: 2 } }),
           "usable", ref({
-            label: "📖 2월 12일: 테마기획",
-            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            label: "📖 [new] 테마기획: 천공의 섬 포스텍",
+            range:  { x1: -3, y1: -3, x2: 3, y2: 3 },
             hover: false,
           }),
           "simpleModal", ref({
             contents: () => <div>
-              <ToBeProjectTheme />
+              <ProjectTheme />
             </div>,
           }),
+        )
+        ecs.create(
+          "transform", ref(mat4.mulAll(
+            mat4.fromTranslation([24.0, -14.5, 0]),
+            mat4.fromScaling([0.25, 0.25, 0.25]),
+          )),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/student_community_hall.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/student_community_hall.png"),
+          }),
+          "simpleMovement", ref({
+            move: (position: vec3, time: Time) => vec3.fromValues(position[0], position[1], Math.sin(time.total * 0.001 + 1) * 0.1 + 0.1 + 3)
+          })
         )
 
         ecs.create(
