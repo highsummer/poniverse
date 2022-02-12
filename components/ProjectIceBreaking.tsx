@@ -8,7 +8,7 @@ const ProjectIceBreaking: React.FunctionComponent = props => {
       <img src={"/assets/icebreaking.png"} />
     </div>
     <div className={"py-4 px-6 bg-slate-100 rounded mb-4"}>
-      📃 "머지않아 이곳은 과학과 기술의 요람이 될 것입니다."
+      📃 &quot;머지않아 이곳은 과학과 기술의 요람이 될 것입니다.&quot;
     </div>
     <span>
       1986년 포항, 이곳에 대한민국 최고의 이공계 대학교를 지으려 한다.<br/>
