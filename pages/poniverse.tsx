@@ -43,6 +43,7 @@ import ToBeProjectMissionTour from "../components/ToBeProjectMissionTour";
 import AboutPoniverse from "../components/AboutPoniverse";
 import Stairs from "../components/Stairs";
 import AboutClass from "../components/AboutClass";
+import ProjectIceBreaking from "../components/ProjectIceBreaking";
 
 interface OuterState {
   width: number
@@ -255,18 +256,29 @@ const Poniverse: NextPage = () => {
         ecs.create(
           "transform", ref(mat4.fromTranslation(vec3.fromValues(12.0, -12.0, 0.0))),
           "simpleModel", ref({
-            mesh: () => new GlobalCacheAsyncMesh("/models/barrier.obj"),
-            texture: () => new GlobalCacheAsyncTexture("/textures/barrier.png"),
+            mesh: () => new GlobalCacheAsyncMesh("/models/icebreaking.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/icebreaking.png"),
           }),
-          "wall", ref({ mask: { x1: -1, y1: -1, x2: 1, y2: 1 } }),
+          "simpleMovement", ref({
+            move: (position: vec3, time: Time) => vec3.fromValues(position[0], position[1], Math.sin(time.total * 0.001) * 0.1 + 0.1)
+          })
+        )
+
+        ecs.create(
+          "transform", ref(mat4.fromTranslation(vec3.fromValues(12.0, -12.0, 0.0))),
+          "simpleModel", ref({
+            mesh: () => new GlobalCacheAsyncMesh("/models/icebreaking_vase.obj"),
+            texture: () => new GlobalCacheAsyncTexture("/textures/marble.png"),
+          }),
+          "wall", ref({ mask: { x1: -2, y1: -2, x2: 2, y2: 2 } }),
           "usable", ref({
-            label: "📖 2월 12일: 아이스 브레이킹",
-            range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
+            label: "📖 [new] 아이스 브레이킹: 응답하라 1986",
+            range:  { x1: -3, y1: -3, x2: 3, y2: 3 },
             hover: false,
           }),
           "simpleModal", ref({
             contents: () => <div>
-              <ToBeProjectIceBreaking />
+              <ProjectIceBreaking />
             </div>,
           }),
         )
@@ -381,7 +393,7 @@ const Poniverse: NextPage = () => {
             }),
             "wall", ref({ mask: { x1: -0.5, y1: -0.5, x2: 0.5, y2: 0.5 } }),
             "usable", ref({
-              label: `📖 [new] ${classId}분반이 전하는 한마디`,
+              label: `📖 ${classId}분반이 전하는 한마디`,
               range:  { x1: -2, y1: -2, x2: 2, y2: 2 },
               hover: false,
             }),
